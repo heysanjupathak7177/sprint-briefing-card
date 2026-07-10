@@ -3,289 +3,252 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sprint Briefing Card</title>
+<title>StoryIQ — BA Story Intelligence Engine</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f5f6f8; min-height:100vh; color:#1a1a2e; }
 
-  .top-bar { background: #1a1a2e; color: white; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-  .top-bar h1 { font-size: 16px; font-weight: 600; }
-  .top-bar .meta { font-size: 12px; color: #aaa; }
-  .sprint-badge { background: #e24b4a; color: white; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; }
-  .today-date { font-size: 12px; color: #aaa; }
+.topbar { background:#1a1a2e; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.topbar-left { display:flex; align-items:center; gap:12px; }
+.logo { width:34px; height:34px; background:#6366f1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.app-name { font-size:17px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
+.app-tag { font-size:11px; color:#888; }
+.api-zone { display:flex; align-items:center; gap:8px; }
+.api-zone input { padding:7px 12px; border:1px solid #3a3a5c; border-radius:6px; background:#2a2a42; color:#fff; font-size:12px; width:260px; font-family:monospace; }
+.api-zone input::placeholder { color:#666; }
+.api-zone button { padding:7px 14px; border:none; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; background:#6366f1; color:#fff; white-space:nowrap; }
+.api-zone button:hover { background:#4f46e5; }
+.api-status { font-size:11px; padding:4px 10px; border-radius:12px; font-weight:500; }
+.api-status.connected { background:#dcfce7; color:#166534; }
+.api-status.disconnected { background:#fef2f2; color:#b91c1c; }
 
-  .config-section { background: white; border-bottom: 1px solid #e8e8e8; padding: 16px 24px; }
-  .config-title { font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-  .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 12px; }
-  .config-grid input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; color: #333; width: 100%; }
-  .config-grid input[type="password"] { font-family: monospace; }
-  .config-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-  .btn-primary { background: #1a1a2e; color: white; }
-  .btn-primary:hover { background: #2d2d4e; }
-  .btn-secondary { background: #f0f0f0; color: #333; }
-  .btn-secondary:hover { background: #e5e5e5; }
-  .btn-green { background: #10b981; color: white; }
-  .btn-green:hover { background: #059669; }
-  .btn-red { background: #e24b4a; color: white; }
-  .btn-orange { background: #f59e0b; color: white; }
+.setup-banner { background:#fffbeb; border-bottom:1px solid #fde68a; padding:12px 24px; font-size:13px; color:#92400e; display:flex; align-items:center; gap:8px; }
+.setup-banner.hidden { display:none; }
 
-  .status-bar { padding: 8px 24px; font-size: 12px; display: flex; align-items: center; gap: 8px; }
-  .status-bar.loading { background: #eff6ff; color: #1d4ed8; }
-  .status-bar.success { background: #f0fdf4; color: #166534; }
-  .status-bar.error { background: #fef2f2; color: #b91c1c; }
-  .status-bar.hidden { display: none; }
-  .spinner { width: 14px; height: 14px; border: 2px solid #93c5fd; border-top-color: #1d4ed8; border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+.main { max-width:1100px; margin:0 auto; padding:24px 16px; }
 
-  .action-bar { background: white; border-bottom: 1px solid #e8e8e8; padding: 10px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .last-sync { font-size: 11px; color: #999; margin-left: auto; }
+.input-section { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:20px; }
+.input-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
+.input-header h2 { font-size:15px; font-weight:600; }
+.example-btn { font-size:11px; padding:4px 10px; border:1px solid #e5e7eb; border-radius:5px; background:#f9fafb; cursor:pointer; color:#555; }
+.example-btn:hover { background:#f3f4f6; }
+.story-input { width:100%; padding:12px 14px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit; resize:vertical; min-height:140px; line-height:1.7; color:#1a1a2e; }
+.story-input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+.input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:12px; flex-wrap:wrap; gap:8px; }
+.char-count { font-size:11px; color:#999; }
+.analyse-btn { padding:10px 28px; background:#1a1a2e; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; }
+.analyse-btn:hover { background:#2d2d4e; }
+.analyse-btn:disabled { background:#9ca3af; cursor:not-allowed; }
 
-  .main { max-width: 1100px; margin: 0 auto; padding: 20px 16px; }
-  .greeting { font-size: 20px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
-  .sprint-info { font-size: 13px; color: #666; margin-bottom: 20px; }
+.loading-bar { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:32px; text-align:center; display:none; }
+.loading-bar.show { display:block; }
+.spinner { width:36px; height:36px; border:3px solid #e5e7eb; border-top-color:#6366f1; border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-steps { font-size:13px; color:#666; margin-top:8px; }
 
-  .summary-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .summary-card { background: white; border-radius: 10px; padding: 14px 16px; border: 1px solid #eee; }
-  .summary-card .label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .summary-card .value { font-size: 28px; font-weight: 700; line-height: 1; }
-  .val-red { color: #e24b4a; } .val-yellow { color: #f59e0b; }
-  .val-green { color: #10b981; } .val-blue { color: #3b82f6; }
-  .val-gray { color: #6b7280; } .val-purple { color: #7c3aed; }
+.results { display:none; }
+.results.show { display:block; }
 
-  .section { background: white; border-radius: 10px; border: 1px solid #eee; margin-bottom: 16px; overflow: hidden; }
-  .section-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
-  .section-header h2 { font-size: 13px; font-weight: 600; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
-  .count-badge { background: #f0f0f0; color: #666; font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
-  .section-body { padding: 12px 16px; }
+.score-banner { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:16px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.score-circle { width:80px; height:80px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; border:4px solid #e5e7eb; }
+.score-circle.red { border-color:#ef4444; }
+.score-circle.amber { border-color:#f59e0b; }
+.score-circle.green { border-color:#10b981; }
+.score-number { font-size:30px; font-weight:700; line-height:1; }
+.score-number.red { color:#ef4444; }
+.score-number.amber { color:#f59e0b; }
+.score-number.green { color:#10b981; }
+.score-denom { font-size:11px; color:#999; }
+.score-right { flex:1; min-width:200px; }
+.score-verdict { font-size:18px; font-weight:700; margin-bottom:4px; }
+.score-summary { font-size:13px; color:#666; line-height:1.6; margin-bottom:10px; }
+.score-metrics { display:flex; gap:8px; flex-wrap:wrap; }
+.metric-pill { font-size:11px; padding:3px 10px; border-radius:12px; font-weight:500; }
+.mp-red { background:#fef2f2; color:#b91c1c; }
+.mp-amber { background:#fffbeb; color:#92400e; }
+.mp-green { background:#f0fdf4; color:#166534; }
+.mp-blue { background:#eff6ff; color:#1d4ed8; }
 
-  .story-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
-  .story-row:last-child { border-bottom: none; }
-  .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-  .dot-red{background:#e24b4a} .dot-yellow{background:#f59e0b}
-  .dot-green{background:#10b981} .dot-blue{background:#3b82f6}
-  .dot-gray{background:#9ca3af} .dot-purple{background:#7c3aed}
-  .story-info { flex: 1; min-width: 0; }
-  .story-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
-  .story-id { font-size: 12px; font-weight: 700; color: #1a1a2e; font-family: monospace; cursor: pointer; text-decoration: none; }
-  .story-id:hover { color: #3b82f6; text-decoration: underline; }
-  .story-title { font-size: 13px; color: #333; }
-  .story-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
-  .story-meta span { font-size: 11px; color: #888; }
-  .story-meta strong { color: #555; }
-  .tag { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
-  .tag-red{background:#fef2f2;color:#b91c1c} .tag-yellow{background:#fffbeb;color:#92400e}
-  .tag-green{background:#f0fdf4;color:#166534} .tag-blue{background:#eff6ff;color:#1d4ed8}
-  .tag-gray{background:#f9fafb;color:#4b5563} .tag-purple{background:#faf5ff;color:#6d28d9}
-  .tag-orange{background:#fff7ed;color:#c2410c}
+.section { background:#fff; border-radius:12px; border:1px solid #e5e7eb; margin-bottom:16px; overflow:hidden; }
+.section-head { padding:14px 18px; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; justify-content:space-between; }
+.section-head h3 { font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; }
+.section-body { padding:16px 18px; }
 
-  .priority-icon { font-size: 12px; }
+.personas-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+.persona-card { border:1px solid #e5e7eb; border-radius:10px; padding:14px; }
+.persona-card.has-conflict { border-color:#fca5a5; background:#fef2f2; }
+.persona-card.has-warning { border-color:#fcd34d; background:#fffbeb; }
+.persona-card.clear { border-color:#6ee7b7; background:#f0fdf4; }
+.persona-top { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.persona-emoji { font-size:24px; }
+.persona-name { font-size:13px; font-weight:600; color:#1a1a2e; }
+.persona-role { font-size:11px; color:#888; }
+.persona-reads { font-size:12px; color:#374151; line-height:1.6; margin-bottom:8px; }
+.persona-conflict { font-size:11px; padding:6px 9px; border-radius:6px; line-height:1.5; }
+.pc-red { background:#fee2e2; color:#991b1b; }
+.pc-yellow { background:#fef3c7; color:#92400e; }
+.pc-green { background:#dcfce7; color:#166534; }
 
-  .oq-row { padding: 8px 0; border-bottom: 1px solid #f5f5f5; display: flex; gap: 10px; align-items: flex-start; }
-  .oq-row:last-child { border-bottom: none; }
-  .oq-days { flex-shrink: 0; text-align: center; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; min-width: 44px; }
-  .days-red{background:#fef2f2;color:#b91c1c} .days-yellow{background:#fffbeb;color:#92400e} .days-gray{background:#f9fafb;color:#6b7280}
-  .oq-text { font-size: 12px; color: #333; line-height: 1.5; }
-  .oq-meta { font-size: 11px; color: #999; margin-top: 2px; }
+.issues-list { display:flex; flex-direction:column; gap:8px; }
+.issue-row { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:8px; }
+.ir-critical { background:#fef2f2; border:1px solid #fecaca; }
+.ir-warning { background:#fffbeb; border:1px solid #fde68a; }
+.ir-pass { background:#f0fdf4; border:1px solid #bbf7d0; }
+.issue-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+.issue-content { flex:1; }
+.issue-type { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+.it-critical { color:#b91c1c; }
+.it-warning { color:#92400e; }
+.it-pass { color:#166534; }
+.issue-text { font-size:12px; line-height:1.6; color:#374151; }
+.issue-fix { font-size:11px; color:#6366f1; margin-top:4px; font-style:italic; }
 
-  .decision-row { padding: 8px 0; border-bottom: 1px solid #f5f5f5; display: flex; gap: 10px; align-items: flex-start; }
-  .decision-row:last-child { border-bottom: none; }
-  .dec-icon { width: 24px; height: 24px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
-  .dec-text { flex: 1; font-size: 12px; color: #333; line-height: 1.5; }
-  .dec-meta { font-size: 11px; color: #999; margin-top: 2px; }
+.rewrite-box { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px 16px; border-left:4px solid #6366f1; }
+.rewrite-text { font-size:13px; line-height:1.8; color:#1a1a2e; white-space:pre-wrap; }
+.rewrite-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.copy-btn { padding:7px 14px; border:1px solid #e5e7eb; border-radius:6px; background:#fff; font-size:12px; cursor:pointer; color:#374151; font-weight:500; }
+.copy-btn:hover { background:#f9fafb; }
+.copy-btn.copied { background:#f0fdf4; color:#166534; border-color:#bbf7d0; }
 
-  .demo-card { padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; }
-  .demo-card:last-child { margin-bottom: 0; }
-  .demo-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .demo-title { font-size: 13px; font-weight: 600; color: #1a1a2e; }
-  .demo-meta { font-size: 11px; color: #888; margin-bottom: 4px; }
+.history-section { background:#fff; border-radius:12px; border:1px solid #e5e7eb; margin-bottom:16px; }
+.history-item { padding:12px 18px; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; gap:12px; cursor:pointer; }
+.history-item:last-child { border-bottom:none; }
+.history-item:hover { background:#f9fafb; }
+.h-score { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+.hs-red { background:#fef2f2; color:#b91c1c; border:2px solid #fecaca; }
+.hs-amber { background:#fffbeb; color:#92400e; border:2px solid #fde68a; }
+.hs-green { background:#f0fdf4; color:#166534; border:2px solid #bbf7d0; }
+.h-meta { flex:1; min-width:0; }
+.h-title { font-size:12px; font-weight:500; color:#1a1a2e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.h-date { font-size:11px; color:#999; margin-top:2px; }
+.h-verdict { font-size:11px; padding:2px 8px; border-radius:10px; font-weight:500; white-space:nowrap; }
+.hv-red { background:#fef2f2; color:#b91c1c; }
+.hv-amber { background:#fffbeb; color:#92400e; }
+.hv-green { background:#f0fdf4; color:#166534; }
+.clear-history { font-size:11px; color:#ef4444; cursor:pointer; padding:4px 8px; }
+.clear-history:hover { text-decoration:underline; }
 
-  .empty-state { text-align: center; padding: 24px; color: #bbb; font-size: 13px; }
+.empty-history { padding:24px; text-align:center; color:#bbb; font-size:13px; }
 
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: white; border-radius: 12px; padding: 24px; width: 480px; max-width: 95vw; max-height: 88vh; overflow-y: auto; }
-  .modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #1a1a2e; }
-  .form-group { margin-bottom: 14px; }
-  .form-group label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
-  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; color: #333; font-family: inherit; }
-  .form-group textarea { height: 72px; resize: vertical; }
-  .form-row { display: flex; gap: 10px; }
-  .form-row .form-group { flex: 1; }
-  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
-  .icon-btn { padding: 4px 8px; border: 1px solid #e5e7eb; border-radius: 5px; background: white; font-size: 11px; cursor: pointer; color: #555; }
-  .icon-btn:hover { background: #f9fafb; }
+.badge { font-size:10px; padding:2px 7px; border-radius:10px; font-weight:600; white-space:nowrap; }
+.badge-red { background:#fef2f2; color:#b91c1c; }
+.badge-amber { background:#fffbeb; color:#92400e; }
+.badge-green { background:#f0fdf4; color:#166534; }
 
-  .setup-hint { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #92400e; line-height: 1.6; }
-  .setup-hint strong { display: block; margin-bottom: 4px; font-size: 14px; }
-
-  @media(max-width:600px){ .config-grid{grid-template-columns:1fr} }
+@media(max-width:600px) {
+  .api-zone input { width:180px; }
+  .topbar { padding:10px 14px; }
+  .main { padding:14px 10px; }
+}
 </style>
 </head>
 <body>
 
-<div class="top-bar">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div style="width:32px;height:32px;background:#e24b4a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">📋</div>
-    <div><h1>Sprint Briefing Card</h1><div class="meta" id="topMeta">Daily team briefing — powered by Jira</div></div>
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">⚡</div>
+    <div>
+      <div class="app-name">StoryIQ</div>
+      <div class="app-tag">BA Story Intelligence Engine</div>
+    </div>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span class="sprint-badge" id="sprintBadge">Sprint —</span>
-    <span class="today-date" id="todayDate"></span>
-  </div>
-</div>
-
-<!-- JIRA CONFIG -->
-<div class="config-section" id="configSection">
-  <div class="config-title">🔌 Connect to Jira — enter once, saved forever</div>
-  <div class="config-grid">
-    <input type="text"     id="cfgDomain"  placeholder="Jira domain e.g. mcfadyen.atlassian.net" />
-    <input type="email"    id="cfgEmail"   placeholder="Your Jira email" />
-    <input type="password" id="cfgToken"   placeholder="Jira API token" />
-    <input type="text"     id="cfgProject" placeholder="Project key e.g. SUFS" />
-    <input type="text"     id="cfgSprint"  placeholder="Sprint name e.g. Sprint 42" />
-    <input type="text"     id="cfgDay"     placeholder="Sprint day e.g. Day 4 of 10" />
-  </div>
-  <div class="config-actions">
-    <button class="btn btn-green" onclick="saveAndConnect()">🔌 Connect & Load Jira</button>
-    <button class="btn btn-secondary" onclick="toggleConfig()">🔼 Hide settings</button>
-    <button class="btn btn-red" onclick="clearAll()">🗑 Clear all data</button>
+  <div class="api-zone">
+    <span class="api-status disconnected" id="apiStatus">Not connected</span>
+    <input type="password" id="apiKeyInput" placeholder="Paste your Claude API key…" />
+    <button onclick="saveApiKey()">Connect</button>
   </div>
 </div>
 
-<div class="status-bar hidden" id="statusBar">
-  <div class="spinner" id="statusSpinner" style="display:none"></div>
-  <span id="statusMsg"></span>
-</div>
-
-<!-- ACTION BAR -->
-<div class="action-bar">
-  <button class="btn btn-secondary" onclick="loadJira()">🔄 Refresh from Jira</button>
-  <button class="btn btn-secondary" onclick="openModal('oqModal')">❓ Add Open Question</button>
-  <button class="btn btn-secondary" onclick="openModal('decisionModal')">✅ Log Decision</button>
-  <button class="btn btn-secondary" onclick="openModal('demoModal')">🎯 Add Demo</button>
-  <span class="last-sync" id="lastSync"></span>
+<div class="setup-banner" id="setupBanner">
+  ⚡ <strong>First time?</strong> &nbsp;Paste your Claude API key above and click Connect. Your key is stored only in your browser — never sent anywhere except Anthropic's API. Get a key at <strong>console.anthropic.com</strong>
 </div>
 
 <div class="main">
-  <div class="greeting" id="greeting"></div>
-  <div class="sprint-info" id="sprintInfo"></div>
 
-  <div class="setup-hint" id="setupHint">
-    <strong>👋 Welcome! One-time setup needed.</strong>
-    Enter your Jira credentials above and click <strong>"Connect & Load Jira"</strong> — your sprint stories will appear automatically. Your token is stored only in your browser, never sent anywhere except Jira.
-  </div>
-
-  <div class="summary-row" id="summaryRow" style="display:none"></div>
-
-  <div class="section" id="riskSection" style="display:none">
-    <div class="section-header">
-      <h2>🔴 At Risk / Blocked <span class="count-badge" id="riskCount">0</span></h2>
+  <div class="input-section">
+    <div class="input-header">
+      <h2>📋 Paste your user story</h2>
+      <button class="example-btn" onclick="loadExample()">Load example story</button>
     </div>
-    <div class="section-body" id="riskList"></div>
+    <textarea class="story-input" id="storyInput" placeholder="As a [user], I want to [action], so that [benefit].
+
+Acceptance Criteria:
+- AC 1
+- AC 2
+- AC 3" oninput="updateCharCount()"></textarea>
+    <div class="input-footer">
+      <span class="char-count" id="charCount">0 characters</span>
+      <button class="analyse-btn" id="analyseBtn" onclick="analyseStory()">
+        ⚡ Analyse with StoryIQ
+      </button>
+    </div>
   </div>
 
-  <div class="section" id="storiesSection" style="display:none">
-    <div class="section-header">
-      <h2>📋 All Sprint Stories <span class="count-badge" id="allCount">0</span></h2>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <select id="filterStatus" onchange="renderStories()" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;">
-          <option value="">All statuses</option>
-          <option value="To Do">To Do</option>
-          <option value="In Progress">In Progress</option>
-          <option value="In Review">In Review</option>
-          <option value="Done">Done</option>
-        </select>
-        <select id="filterAssignee" onchange="renderStories()" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;">
-          <option value="">All assignees</option>
-        </select>
+  <div class="loading-bar" id="loadingBar">
+    <div class="spinner"></div>
+    <div style="font-size:15px;font-weight:600;color:#1a1a2e;">Running 4-persona analysis…</div>
+    <div class="loading-steps" id="loadingStep">Sending to Claude AI…</div>
+  </div>
+
+  <div class="results" id="resultsArea">
+
+    <div class="score-banner">
+      <div class="score-circle" id="scoreCircle">
+        <span class="score-number" id="scoreNum">—</span>
+        <span class="score-denom">/100</span>
+      </div>
+      <div class="score-right">
+        <div class="score-verdict" id="scoreVerdict">—</div>
+        <div class="score-summary" id="scoreSummary"></div>
+        <div class="score-metrics" id="scoreMetrics"></div>
       </div>
     </div>
-    <div class="section-body" id="allList"></div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3>🎭 How each persona reads your story</h3>
+        <span style="font-size:11px;color:#999;">Red = conflict · Yellow = warning · Green = clear</span>
+      </div>
+      <div class="section-body">
+        <div class="personas-grid" id="personasGrid"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3>🔍 Issues detected</h3>
+        <span class="badge badge-red" id="criticalCount"></span>
+      </div>
+      <div class="section-body">
+        <div class="issues-list" id="issuesList"></div>
+      </div>
+    </div>
+
+    <div class="section" id="rewriteSection">
+      <div class="section-head">
+        <h3>✨ Suggested rewrite — all conflicts resolved</h3>
+      </div>
+      <div class="section-body">
+        <div class="rewrite-box">
+          <div class="rewrite-text" id="rewriteText"></div>
+        </div>
+        <div class="rewrite-actions">
+          <button class="copy-btn" id="copyBtn" onclick="copyRewrite()">📋 Copy improved story</button>
+          <button class="copy-btn" onclick="useRewrite()">↑ Use as new input</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="section">
-    <div class="section-header">
-      <h2>❓ Open Questions <span class="count-badge" id="oqCount">0</span></h2>
-      <span style="font-size:11px;color:#f59e0b;font-weight:500;" id="oqWarning"></span>
+  <div class="section history-section" id="historySection">
+    <div class="section-head">
+      <h3>🕐 Analysis history</h3>
+      <span class="clear-history" onclick="clearHistory()">Clear all</span>
     </div>
-    <div class="section-body" id="oqList"><div class="empty-state">No open questions logged yet.</div></div>
+    <div id="historyList"><div class="empty-history">No analyses yet — run your first story above.</div></div>
   </div>
 
-  <div class="section">
-    <div class="section-header">
-      <h2>✅ Decisions This Sprint <span class="count-badge" id="decCount">0</span></h2>
-    </div>
-    <div class="section-body" id="decList"><div class="empty-state">No decisions logged yet.</div></div>
-  </div>
-
-  <div class="section">
-    <div class="section-header">
-      <h2>🎯 Upcoming Demos <span class="count-badge" id="demoCount">0</span></h2>
-    </div>
-    <div class="section-body" id="demoList"><div class="empty-state">No demos scheduled yet.</div></div>
-  </div>
-</div>
-
-<!-- OQ MODAL -->
-<div class="modal-overlay" id="oqModal">
-  <div class="modal">
-    <h3>Add Open Question</h3>
-    <div class="form-group"><label>Question *</label><textarea id="oqText" placeholder="e.g. How is one review per product configured?"></textarea></div>
-    <div class="form-row">
-      <div class="form-group"><label>Raised By</label><input type="text" id="oqBy" placeholder="e.g. Vivek" /></div>
-      <div class="form-group"><label>Assigned To</label><input type="text" id="oqAssigned" placeholder="e.g. Geethu" /></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Related Story</label><input type="text" id="oqStory" placeholder="e.g. SUFS-412" /></div>
-      <div class="form-group"><label>Days Open</label><input type="number" id="oqDays" placeholder="e.g. 3" min="0" /></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('oqModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveOQ()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- DECISION MODAL -->
-<div class="modal-overlay" id="decisionModal">
-  <div class="modal">
-    <h3>Log a Decision</h3>
-    <div class="form-group"><label>Decision *</label><textarea id="decText" placeholder="e.g. Email delay changed from 21 days to 1 day"></textarea></div>
-    <div class="form-row">
-      <div class="form-group"><label>Decided By</label><input type="text" id="decBy" placeholder="e.g. Mathew" /></div>
-      <div class="form-group"><label>Date</label><input type="text" id="decDate" placeholder="e.g. Tuesday" /></div>
-    </div>
-    <div class="form-group"><label>Related Story</label><input type="text" id="decStory" placeholder="e.g. SUFS-412" /></div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('decisionModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveDecision()">Log Decision</button>
-    </div>
-  </div>
-</div>
-
-<!-- DEMO MODAL -->
-<div class="modal-overlay" id="demoModal">
-  <div class="modal">
-    <h3>Add Demo</h3>
-    <div class="form-group"><label>Demo Title *</label><input type="text" id="demoTitle" placeholder="e.g. Supplier Rating Auto Approval" /></div>
-    <div class="form-row">
-      <div class="form-group"><label>Date & Time</label><input type="text" id="demoDateTime" placeholder="e.g. Friday 3pm" /></div>
-      <div class="form-group"><label>Presenter</label><input type="text" id="demoPresenter" placeholder="e.g. Geethu" /></div>
-    </div>
-    <div class="form-group"><label>Readiness</label>
-      <select id="demoReadiness">
-        <option value="ready">✅ Ready to demo</option>
-        <option value="conditional">⚠️ Ready with caveats</option>
-        <option value="not-ready">🔴 Not ready</option>
-      </select>
-    </div>
-    <div class="form-group"><label>Notes</label><textarea id="demoNotes" placeholder="e.g. 2 open questions need answering first"></textarea></div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('demoModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveDemo()">Save Demo</button>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -295,387 +258,311 @@ const S = {
   del: k => localStorage.removeItem(k)
 };
 
-let jiraStories = S.get('sbc_jira') || [];
-let openQs      = S.get('sbc_oqs')  || [];
-let decisions   = S.get('sbc_decs') || [];
-let demos       = S.get('sbc_demos')|| [];
-let cfg         = S.get('sbc_cfg')  || {};
+let history = S.get('siq_history') || [];
+let currentResult = null;
 
-function getGreeting() {
-  const h = new Date().getHours();
-  return h<12 ? 'Good morning team ☀️' : h<17 ? 'Good afternoon team 👋' : 'Good evening team 🌙';
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { alert('Please paste your API key'); return; }
+  if (!key.startsWith('sk-ant-')) { alert('That doesn\'t look like a valid Claude API key. It should start with sk-ant-'); return; }
+  S.set('siq_key', key);
+  document.getElementById('apiStatus').textContent = 'Connected ✓';
+  document.getElementById('apiStatus').className = 'api-status connected';
+  document.getElementById('setupBanner').classList.add('hidden');
 }
 
-function formatDate() {
-  return new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+function loadExample() {
+  document.getElementById('storyInput').value = `As a parent, I want to submit a supplier rating after my order is complete, so that other parents can make informed purchasing decisions.
+
+Acceptance Criteria:
+- Parent can submit a star rating (1-5) and optional text review after order is marked complete
+- Rating should be automatically approved based on admin configuration
+- System sends confirmation email to parent within 1 day of order completion
+- Rating is visible on supplier profile page`;
+  updateCharCount();
 }
 
-function showStatus(msg, type, spin=false) {
-  const bar = document.getElementById('statusBar');
-  const sp  = document.getElementById('statusSpinner');
-  const txt = document.getElementById('statusMsg');
-  bar.className = `status-bar ${type}`;
-  sp.style.display = spin ? 'block' : 'none';
-  txt.textContent = msg;
+function updateCharCount() {
+  const len = document.getElementById('storyInput').value.length;
+  document.getElementById('charCount').textContent = len + ' characters';
 }
 
-function hideStatus() {
-  document.getElementById('statusBar').className = 'status-bar hidden';
-}
+const loadingMessages = [
+  'Sending to Claude AI…',
+  'Analysing developer perspective…',
+  'Analysing QA engineer perspective…',
+  'Analysing end user perspective…',
+  'Detecting conflicts between personas…',
+  'Generating quality score…',
+  'Writing improved story…'
+];
 
-function toggleConfig() {
-  const s = document.getElementById('configSection');
-  s.style.display = s.style.display === 'none' ? '' : 'none';
-}
+async function analyseStory() {
+  const story = document.getElementById('storyInput').value.trim();
+  if (!story) { alert('Please paste a user story first'); return; }
 
-function loadCfgInputs() {
-  if (cfg.domain)  document.getElementById('cfgDomain').value  = cfg.domain;
-  if (cfg.email)   document.getElementById('cfgEmail').value   = cfg.email;
-  if (cfg.token)   document.getElementById('cfgToken').value   = cfg.token;
-  if (cfg.project) document.getElementById('cfgProject').value = cfg.project;
-  if (cfg.sprint)  document.getElementById('cfgSprint').value  = cfg.sprint;
-  if (cfg.day)     document.getElementById('cfgDay').value     = cfg.day;
-}
+  const key = S.get('siq_key');
+  if (!key) { alert('Please connect your Claude API key first (top right)'); return; }
 
-function saveAndConnect() {
-  cfg.domain  = document.getElementById('cfgDomain').value.trim().replace(/^https?:\/\//,'').replace(/\/$/,'');
-  cfg.email   = document.getElementById('cfgEmail').value.trim();
-  cfg.token   = document.getElementById('cfgToken').value.trim();
-  cfg.project = document.getElementById('cfgProject').value.trim().toUpperCase();
-  cfg.sprint  = document.getElementById('cfgSprint').value.trim();
-  cfg.day     = document.getElementById('cfgDay').value.trim();
-  if (!cfg.domain || !cfg.email || !cfg.token || !cfg.project) {
-    alert('Please fill in Jira domain, email, token and project key'); return;
-  }
-  S.set('sbc_cfg', cfg);
-  loadJira();
-}
+  document.getElementById('loadingBar').classList.add('show');
+  document.getElementById('resultsArea').classList.remove('show');
+  document.getElementById('analyseBtn').disabled = true;
 
-async function loadJira() {
-  if (!cfg.domain || !cfg.email || !cfg.token || !cfg.project) {
-    showStatus('⚙️ Please enter your Jira credentials above and click Connect', 'error');
-    return;
-  }
-  showStatus('Connecting to Jira and loading sprint stories…', 'loading', true);
-
-  const auth = btoa(`${cfg.email}:${cfg.token}`);
-  const base = `https://${cfg.domain}`;
+  let step = 0;
+  const stepInterval = setInterval(() => {
+    step = (step + 1) % loadingMessages.length;
+    document.getElementById('loadingStep').textContent = loadingMessages[step];
+  }, 1200);
 
   try {
-    // Step 1: Get active sprint for the board
-    const boardId = '485';
-    const sprintRes = await fetch(
-      `${base}/rest/agile/1.0/board/${boardId}/sprint?state=active`,
-      { headers: { 'Authorization': `Basic ${auth}`, 'Accept': 'application/json' } }
-    );
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1500,
+        messages: [{
+          role: 'user',
+          content: `You are StoryIQ, a senior BA quality analysis engine. Analyse this user story and return ONLY valid JSON with no markdown, no explanation, no code fences.
 
-    if (!sprintRes.ok) {
-      const err = await sprintRes.text();
-      showStatus(`❌ Jira connection failed (${sprintRes.status}). Check your credentials.`, 'error');
-      console.error(err);
-      return;
+USER STORY:
+${story}
+
+Return this exact JSON:
+{
+  "score": <integer 0-100>,
+  "verdict": "<one of: Not grooming ready | Needs work | Grooming ready>",
+  "summary": "<one sentence overall quality assessment>",
+  "metrics": [
+    {"label": "Completeness", "rating": "<low|medium|high>"},
+    {"label": "Clarity", "rating": "<low|medium|high>"},
+    {"label": "Testability", "rating": "<low|medium|high>"},
+    {"label": "Business value", "rating": "<low|medium|high>"}
+  ],
+  "personas": [
+    {
+      "name": "Developer",
+      "emoji": "🧑‍💻",
+      "reads": "<how a developer interprets this story in one clear sentence>",
+      "assumption": "<the biggest assumption the developer will make>",
+      "conflict": "<specific conflict or gap they will encounter, or null if none>",
+      "status": "<conflict|warning|clear>"
+    },
+    {
+      "name": "QA Engineer",
+      "emoji": "🧪",
+      "reads": "<how QA reads this story>",
+      "assumption": "<what QA assumes about edge cases>",
+      "conflict": "<missing test scenario or ambiguity, or null>",
+      "status": "<conflict|warning|clear>"
+    },
+    {
+      "name": "End User",
+      "emoji": "👤",
+      "reads": "<how the end user would experience this feature>",
+      "assumption": "<what the user expects that may not be stated>",
+      "conflict": "<confusion point for the user, or null>",
+      "status": "<conflict|warning|clear>"
+    },
+    {
+      "name": "Client",
+      "emoji": "💼",
+      "reads": "<how the client / product owner reads this>",
+      "assumption": "<business assumption the client is making>",
+      "conflict": "<expectation mismatch or scope concern, or null>",
+      "status": "<conflict|warning|clear>"
     }
-
-    const sprintData = await sprintRes.json();
-    const activeSprints = sprintData.values || [];
-
-    if (activeSprints.length === 0) {
-      showStatus('⚠️ No active sprint found on this board.', 'error');
-      return;
+  ],
+  "issues": [
+    {
+      "type": "<critical|warning|pass>",
+      "category": "<Vague language|Missing AC|Undefined role|No failure flow|Assumption|Scope risk|Good practice>",
+      "text": "<specific issue description referencing actual words from the story>",
+      "suggestion": "<one sentence fix>"
     }
-
-    const activeSprint = activeSprints[0];
-    const sprintName   = activeSprint.name;
-    const sprintId     = activeSprint.id;
-
-    // Auto-set sprint name if not manually set
-    if (!cfg.sprint) {
-      cfg.sprint = sprintName;
-      S.set('sbc_cfg', cfg);
-      document.getElementById('cfgSprint').value = sprintName;
-    }
-
-    // Step 2: Get all issues in this sprint
-    let allIssues = [];
-    let startAt   = 0;
-    const maxResults = 100;
-
-    while (true) {
-      const issueRes = await fetch(
-        `${base}/rest/agile/1.0/sprint/${sprintId}/issue?startAt=${startAt}&maxResults=${maxResults}&fields=summary,status,assignee,priority,issuetype,updated,comment,labels,fixVersions`,
-        { headers: { 'Authorization': `Basic ${auth}`, 'Accept': 'application/json' } }
-      );
-
-      if (!issueRes.ok) break;
-      const issueData = await issueRes.json();
-      allIssues = allIssues.concat(issueData.issues || []);
-      if (allIssues.length >= issueData.total) break;
-      startAt += maxResults;
-    }
-
-    // Step 3: Map to our format
-    jiraStories = allIssues.map(issue => {
-      const f          = issue.fields;
-      const status     = f.status?.name || 'Unknown';
-      const assignee   = f.assignee?.displayName || 'Unassigned';
-      const priority   = f.priority?.name || 'Medium';
-      const updated    = f.updated ? new Date(f.updated).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
-      const lastComment = f.comment?.comments?.slice(-1)[0]?.body?.substring(0,120) || '';
-      const issueType  = f.issuetype?.name || 'Story';
-
-      return {
-        id:       issue.key,
-        title:    f.summary,
-        status,
-        assignee,
-        priority,
-        updated,
-        lastComment: lastComment ? lastComment.replace(/[*_\[\]]/g,'') : '',
-        issueType,
-        url: `${base}/browse/${issue.key}`
-      };
+  ],
+  "rewrite": "<complete rewritten user story with all conflicts resolved, written in proper format with clear ACs>"
+}`
+        }]
+      })
     });
 
-    S.set('sbc_jira', jiraStories);
-    S.set('sbc_lastSync', new Date().toLocaleTimeString());
+    clearInterval(stepInterval);
 
-    showStatus(`✅ Loaded ${jiraStories.length} stories from ${sprintName}`, 'success');
-    setTimeout(hideStatus, 4000);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || `API error ${res.status}`);
+    }
 
-    document.getElementById('lastSync').textContent = `Last synced: ${new Date().toLocaleTimeString()}`;
-    document.getElementById('setupHint').style.display = 'none';
+    const data = await res.json();
+    const raw  = data.content[0].text.replace(/```json|```/g,'').trim();
+    const result = JSON.parse(raw);
 
-    renderAll();
+    currentResult = result;
+    saveToHistory(story, result);
+    renderResults(result);
 
-  } catch (e) {
-    showStatus(`❌ Error: ${e.message} — This may be a CORS issue. See note below.`, 'error');
-    console.error(e);
+  } catch(e) {
+    clearInterval(stepInterval);
+    document.getElementById('loadingBar').classList.remove('show');
+    document.getElementById('analyseBtn').disabled = false;
+    alert('Analysis failed: ' + e.message + '\n\nCheck your API key is correct and has credits.');
   }
 }
 
-function getStatusStyle(status) {
-  const s = status.toLowerCase();
-  if (s.includes('done') || s.includes('closed') || s.includes('complete'))
-    return { dot:'dot-green', tag:'tag-green', risk: false };
-  if (s.includes('progress') || s.includes('dev') || s.includes('review'))
-    return { dot:'dot-blue', tag:'tag-blue', risk: false };
-  if (s.includes('block') || s.includes('impediment'))
-    return { dot:'dot-red', tag:'tag-red', risk: true };
-  if (s.includes('qa') || s.includes('test') || s.includes('verify'))
-    return { dot:'dot-purple', tag:'tag-purple', risk: false };
-  if (s.includes('to do') || s.includes('open') || s.includes('backlog'))
-    return { dot:'dot-gray', tag:'tag-gray', risk: false };
-  return { dot:'dot-yellow', tag:'tag-yellow', risk: false };
-}
+function renderResults(r) {
+  document.getElementById('loadingBar').classList.remove('show');
+  document.getElementById('analyseBtn').disabled = false;
+  document.getElementById('resultsArea').classList.add('show');
 
-function getPriorityIcon(p) {
-  if (!p) return '';
-  const l = p.toLowerCase();
-  if (l.includes('highest') || l.includes('blocker')) return '🔴';
-  if (l.includes('high'))   return '🟠';
-  if (l.includes('medium')) return '🟡';
-  if (l.includes('low'))    return '🟢';
-  return '⚪';
-}
+  const score = r.score;
+  const cls = score >= 75 ? 'green' : score >= 50 ? 'amber' : 'red';
 
-function storyCard(s) {
-  const sm = getStatusStyle(s.status);
-  return `
-    <div class="story-row">
-      <div class="status-dot ${sm.dot}"></div>
-      <div class="story-info">
-        <div class="story-top">
-          <a class="story-id" href="${s.url}" target="_blank">${s.id}</a>
-          <span class="story-title">${s.title}</span>
-          <span class="tag ${sm.tag}">${s.status}</span>
-          ${s.priority ? `<span class="priority-icon" title="${s.priority}">${getPriorityIcon(s.priority)}</span>` : ''}
-        </div>
-        <div class="story-meta">
-          ${s.assignee !== 'Unassigned' ? `<span>👤 <strong>${s.assignee}</strong></span>` : '<span>👤 Unassigned</span>'}
-          ${s.updated  ? `<span>🕐 Updated: <strong>${s.updated}</strong></span>` : ''}
-          ${s.issueType ? `<span>📌 ${s.issueType}</span>` : ''}
-        </div>
-        ${s.lastComment ? `<div style="font-size:11px;color:#666;margin-top:3px;font-style:italic;">💬 ${s.lastComment}${s.lastComment.length >= 120 ? '…' : ''}</div>` : ''}
-      </div>
-    </div>`;
-}
+  document.getElementById('scoreCircle').className = 'score-circle ' + cls;
+  document.getElementById('scoreNum').className = 'score-number ' + cls;
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('scoreVerdict').textContent = r.verdict;
+  document.getElementById('scoreSummary').textContent = r.summary;
 
-function renderStories() {
-  const filterStatus   = document.getElementById('filterStatus')?.value   || '';
-  const filterAssignee = document.getElementById('filterAssignee')?.value || '';
+  const mColors = { low:'badge-red', medium:'badge-amber', high:'badge-green' };
+  document.getElementById('scoreMetrics').innerHTML = (r.metrics || []).map(m =>
+    `<span class="metric-pill mp-${m.rating === 'high' ? 'green' : m.rating === 'medium' ? 'amber' : 'red'}">${m.label}: ${m.rating}</span>`
+  ).join('');
 
-  let filtered = jiraStories;
-  if (filterStatus)   filtered = filtered.filter(s => s.status === filterStatus);
-  if (filterAssignee) filtered = filtered.filter(s => s.assignee === filterAssignee);
+  const cardClass = { conflict:'has-conflict', warning:'has-warning', clear:'clear' };
+  const conflictClass = { conflict:'pc-red', warning:'pc-yellow', clear:'pc-green' };
+  const conflictIcon = { conflict:'⚠️ ', warning:'💡 ', clear:'✅ ' };
 
-  const atRisk = filtered.filter(s => getStatusStyle(s.status).risk);
-
-  document.getElementById('riskCount').textContent = atRisk.length;
-  document.getElementById('riskList').innerHTML    = atRisk.length
-    ? atRisk.map(storyCard).join('')
-    : '<div class="empty-state">No at-risk stories — great sprint! 🎉</div>';
-  document.getElementById('riskSection').style.display = '';
-
-  document.getElementById('allCount').textContent  = filtered.length;
-  document.getElementById('allList').innerHTML     = filtered.length
-    ? filtered.map(storyCard).join('')
-    : '<div class="empty-state">No stories match the filter.</div>';
-  document.getElementById('storiesSection').style.display = '';
-}
-
-function renderAll() {
-  document.getElementById('todayDate').textContent  = formatDate();
-  document.getElementById('greeting').textContent   = getGreeting();
-  document.getElementById('sprintBadge').textContent = cfg.sprint || 'Sprint —';
-  document.getElementById('topMeta').textContent    = [cfg.sprint, cfg.day].filter(Boolean).join(' · ') || 'Daily team briefing — powered by Jira';
-  document.getElementById('sprintInfo').textContent = [cfg.sprint, cfg.day].filter(Boolean).join(' — ');
-
-  // Populate assignee filter
-  const assignees = [...new Set(jiraStories.map(s => s.assignee).filter(a => a !== 'Unassigned'))].sort();
-  const sel = document.getElementById('filterAssignee');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">All assignees</option>' + assignees.map(a => `<option value="${a}" ${a===cur?'selected':''}>${a}</option>`).join('');
-
-  // Summary cards
-  const done    = jiraStories.filter(s => getStatusStyle(s.status).dot === 'dot-green').length;
-  const inProg  = jiraStories.filter(s => getStatusStyle(s.status).dot === 'dot-blue').length;
-  const atRisk  = jiraStories.filter(s => getStatusStyle(s.status).risk).length;
-  const todo    = jiraStories.filter(s => getStatusStyle(s.status).dot === 'dot-gray').length;
-  const oldOQs  = openQs.filter(q => q.days >= 3).length;
-
-  document.getElementById('summaryRow').style.display = '';
-  document.getElementById('summaryRow').innerHTML = `
-    <div class="summary-card"><div class="label">Total Stories</div><div class="value val-blue">${jiraStories.length}</div></div>
-    <div class="summary-card"><div class="label">At Risk</div><div class="value val-red">${atRisk}</div></div>
-    <div class="summary-card"><div class="label">In Progress</div><div class="value val-blue">${inProg}</div></div>
-    <div class="summary-card"><div class="label">To Do</div><div class="value val-gray">${todo}</div></div>
-    <div class="summary-card"><div class="label">Done</div><div class="value val-green">${done}</div></div>
-    <div class="summary-card"><div class="label">Open Questions</div><div class="value ${openQs.length>0?'val-yellow':'val-green'}">${openQs.length}</div></div>
-    <div class="summary-card"><div class="label">Decisions Logged</div><div class="value val-gray">${decisions.length}</div></div>
-  `;
-
-  renderStories();
-
-  // Open Questions
-  document.getElementById('oqCount').textContent   = openQs.length;
-  document.getElementById('oqWarning').textContent = oldOQs > 0 ? `⚠️ ${oldOQs} open 3+ days` : '';
-  document.getElementById('oqList').innerHTML = openQs.length ? openQs.map(q => {
-    const dc = q.days >= 3 ? 'days-red' : q.days >= 1 ? 'days-yellow' : 'days-gray';
-    return `<div class="oq-row">
-      <div class="oq-days ${dc}">${q.days}d</div>
-      <div style="flex:1;">
-        <div class="oq-text">${q.text}</div>
-        <div class="oq-meta">
-          ${q.by ? `Raised by: <strong>${q.by}</strong>` : ''}
-          ${q.assigned ? ` · Assigned: <strong>${q.assigned}</strong>` : ''}
-          ${q.story ? ` · ${q.story}` : ''}
+  document.getElementById('personasGrid').innerHTML = r.personas.map(p => `
+    <div class="persona-card ${cardClass[p.status] || 'clear'}">
+      <div class="persona-top">
+        <span class="persona-emoji">${p.emoji}</span>
+        <div>
+          <div class="persona-name">${p.name}</div>
+          <div class="persona-role">reads this as…</div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <button class="icon-btn" style="color:green;" onclick="resolveOQ('${q.uid}')">✅ Resolved</button>
-        <button class="icon-btn" style="color:#e24b4a;" onclick="deleteOQ('${q.uid}')">🗑</button>
+      <div class="persona-reads">${p.reads}</div>
+      ${p.assumption ? `<div style="font-size:11px;color:#888;margin-bottom:7px;font-style:italic;">Assumes: ${p.assumption}</div>` : ''}
+      <div class="persona-conflict ${conflictClass[p.status] || 'pc-green'}">
+        ${conflictIcon[p.status] || '✅ '}${p.conflict || 'No conflicts detected'}
       </div>
-    </div>`;
-  }).join('') : '<div class="empty-state">No open questions. All clear! ✅</div>';
+    </div>`).join('');
 
-  // Decisions
-  document.getElementById('decCount').textContent = decisions.length;
-  document.getElementById('decList').innerHTML = decisions.length ? decisions.map(d => `
-    <div class="decision-row">
-      <div class="dec-icon">✅</div>
-      <div style="flex:1;">
-        <div class="dec-text">${d.text}</div>
-        <div class="dec-meta">
-          ${d.by   ? `By: <strong>${d.by}</strong>` : ''}
-          ${d.date ? ` · ${d.date}` : ''}
-          ${d.story? ` · ${d.story}` : ''}
-        </div>
+  const criticals = (r.issues || []).filter(i => i.type === 'critical').length;
+  document.getElementById('criticalCount').textContent = criticals > 0 ? `${criticals} critical` : '';
+  document.getElementById('criticalCount').style.display = criticals > 0 ? '' : 'none';
+
+  const typeMap = { critical:'ir-critical', warning:'ir-warning', pass:'ir-pass' };
+  const iconMap = { critical:'🔴', warning:'🟡', pass:'✅' };
+  const labelMap = { critical:'Critical', warning:'Warning', pass:'Good practice' };
+  const labelCls = { critical:'it-critical', warning:'it-warning', pass:'it-pass' };
+
+  document.getElementById('issuesList').innerHTML = (r.issues || []).map(i => `
+    <div class="issue-row ${typeMap[i.type] || 'ir-warning'}">
+      <span class="issue-icon">${iconMap[i.type] || '🟡'}</span>
+      <div class="issue-content">
+        <div class="issue-type ${labelCls[i.type] || 'it-warning'}">${labelMap[i.type] || 'Warning'} · ${i.category || ''}</div>
+        <div class="issue-text">${i.text}</div>
+        ${i.suggestion ? `<div class="issue-fix">💡 Fix: ${i.suggestion}</div>` : ''}
       </div>
-      <button class="icon-btn" style="color:#e24b4a;" onclick="deleteDecision('${d.uid}')">🗑</button>
-    </div>`).join('') : '<div class="empty-state">No decisions logged yet.</div>';
+    </div>`).join('');
 
-  // Demos
-  const rm = { ready:'✅ Ready to demo', conditional:'⚠️ Ready with caveats', 'not-ready':'🔴 Not ready' };
-  const rc = { ready:'tag-green', conditional:'tag-yellow', 'not-ready':'tag-red' };
-  document.getElementById('demoCount').textContent = demos.length;
-  document.getElementById('demoList').innerHTML = demos.length ? demos.map(d => `
-    <div class="demo-card">
-      <div class="demo-top">
-        <div class="demo-title">${d.title}</div>
-        <button class="icon-btn" style="color:#e24b4a;" onclick="deleteDemo('${d.uid}')">🗑</button>
+  if (r.rewrite) {
+    document.getElementById('rewriteText').textContent = r.rewrite;
+    document.getElementById('rewriteSection').style.display = '';
+  } else {
+    document.getElementById('rewriteSection').style.display = 'none';
+  }
+
+  document.getElementById('resultsArea').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function copyRewrite() {
+  const text = document.getElementById('rewriteText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy improved story'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+function useRewrite() {
+  const text = document.getElementById('rewriteText').textContent;
+  document.getElementById('storyInput').value = text;
+  updateCharCount();
+  document.getElementById('storyInput').scrollIntoView({ behavior:'smooth' });
+}
+
+function saveToHistory(story, result) {
+  const entry = {
+    id: Date.now().toString(),
+    date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }),
+    title: story.split('\n')[0].substring(0, 80),
+    score: result.score,
+    verdict: result.verdict,
+    story,
+    result
+  };
+  history.unshift(entry);
+  if (history.length > 20) history = history.slice(0, 20);
+  S.set('siq_history', history);
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (!history.length) {
+    list.innerHTML = '<div class="empty-history">No analyses yet — run your first story above.</div>';
+    return;
+  }
+  const scoreClass = s => s >= 75 ? 'hs-green' : s >= 50 ? 'hs-amber' : 'hs-red';
+  const verdictClass = s => s >= 75 ? 'hv-green' : s >= 50 ? 'hv-amber' : 'hv-red';
+
+  list.innerHTML = history.map(h => `
+    <div class="history-item" onclick="loadHistoryItem('${h.id}')">
+      <div class="h-score ${scoreClass(h.score)}">${h.score}</div>
+      <div class="h-meta">
+        <div class="h-title">${h.title}</div>
+        <div class="h-date">${h.date}</div>
       </div>
-      <div class="demo-meta">
-        ${d.datetime  ? `📅 ${d.datetime}` : ''}
-        ${d.presenter ? ` · 👤 ${d.presenter}` : ''}
-      </div>
-      <div style="margin-top:4px;">
-        <span class="tag ${rc[d.readiness]}">${rm[d.readiness]}</span>
-        ${d.notes ? `<span style="font-size:11px;color:#888;margin-left:8px;">${d.notes}</span>` : ''}
-      </div>
-    </div>`).join('') : '<div class="empty-state">No demos scheduled yet.</div>';
+      <span class="h-verdict ${verdictClass(h.score)}">${h.verdict}</span>
+    </div>`).join('');
 }
 
-// OQ
-function saveOQ() {
-  const text = document.getElementById('oqText').value.trim();
-  if (!text) { alert('Please enter a question'); return; }
-  openQs.push({ text, by: document.getElementById('oqBy').value.trim(), assigned: document.getElementById('oqAssigned').value.trim(), story: document.getElementById('oqStory').value.trim(), days: parseInt(document.getElementById('oqDays').value)||0, uid: Date.now().toString() });
-  S.set('sbc_oqs', openQs); closeModal('oqModal'); renderAll();
-}
-function resolveOQ(uid) { openQs = openQs.filter(q=>q.uid!==uid); S.set('sbc_oqs',openQs); renderAll(); }
-function deleteOQ(uid)   { openQs = openQs.filter(q=>q.uid!==uid); S.set('sbc_oqs',openQs); renderAll(); }
-
-// Decisions
-function saveDecision() {
-  const text = document.getElementById('decText').value.trim();
-  if (!text) { alert('Please enter a decision'); return; }
-  decisions.push({ text, by: document.getElementById('decBy').value.trim(), date: document.getElementById('decDate').value.trim(), story: document.getElementById('decStory').value.trim(), uid: Date.now().toString() });
-  S.set('sbc_decs', decisions); closeModal('decisionModal'); renderAll();
-}
-function deleteDecision(uid) { decisions = decisions.filter(d=>d.uid!==uid); S.set('sbc_decs',decisions); renderAll(); }
-
-// Demos
-function saveDemo() {
-  const title = document.getElementById('demoTitle').value.trim();
-  if (!title) { alert('Please enter a demo title'); return; }
-  demos.push({ title, datetime: document.getElementById('demoDateTime').value.trim(), presenter: document.getElementById('demoPresenter').value.trim(), readiness: document.getElementById('demoReadiness').value, notes: document.getElementById('demoNotes').value.trim(), uid: Date.now().toString() });
-  S.set('sbc_demos', demos); closeModal('demoModal'); renderAll();
-}
-function deleteDemo(uid) { demos = demos.filter(d=>d.uid!==uid); S.set('sbc_demos',demos); renderAll(); }
-
-function clearAll() {
-  if (!confirm('Clear ALL data including Jira stories?')) return;
-  jiraStories=[]; openQs=[]; decisions=[]; demos=[]; cfg={};
-  ['sbc_jira','sbc_oqs','sbc_decs','sbc_demos','sbc_cfg','sbc_lastSync'].forEach(k=>S.del(k));
-  ['cfgDomain','cfgEmail','cfgToken','cfgProject','cfgSprint','cfgDay'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('setupHint').style.display='';
-  document.getElementById('summaryRow').style.display='none';
-  document.getElementById('riskSection').style.display='none';
-  document.getElementById('storiesSection').style.display='none';
-  renderAll();
+function loadHistoryItem(id) {
+  const item = history.find(h => h.id === id);
+  if (!item) return;
+  document.getElementById('storyInput').value = item.story;
+  updateCharCount();
+  currentResult = item.result;
+  renderResults(item.result);
+  window.scrollTo({ top: 0, behavior:'smooth' });
 }
 
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-  document.querySelectorAll(`#${id} input, #${id} textarea, #${id} select`).forEach(el => { if(el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; });
+function clearHistory() {
+  if (!confirm('Clear all analysis history?')) return;
+  history = [];
+  S.del('siq_history');
+  renderHistory();
 }
-document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) closeModal(m.id); }));
 
 // Init
-loadCfgInputs();
-document.getElementById('todayDate').textContent = formatDate();
-document.getElementById('greeting').textContent  = getGreeting();
-document.getElementById('sprintBadge').textContent = cfg.sprint || 'Sprint —';
-if (cfg.sprint) document.getElementById('sprintInfo').textContent = [cfg.sprint, cfg.day].filter(Boolean).join(' — ');
-
-const lastSync = S.get('sbc_lastSync');
-if (lastSync) document.getElementById('lastSync').textContent = `Last synced: ${lastSync}`;
-
-if (jiraStories.length > 0) {
-  document.getElementById('setupHint').style.display = 'none';
-  renderAll();
+const savedKey = S.get('siq_key');
+if (savedKey) {
+  document.getElementById('apiKeyInput').value = savedKey;
+  document.getElementById('apiStatus').textContent = 'Connected ✓';
+  document.getElementById('apiStatus').className = 'api-status connected';
+  document.getElementById('setupBanner').classList.add('hidden');
 }
+updateCharCount();
+renderHistory();
 </script>
 </body>
 </html>
