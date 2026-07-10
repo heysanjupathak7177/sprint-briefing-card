@@ -192,7 +192,7 @@ body{font-family:'Aptos','Nunito Sans','Segoe UI',sans-serif;background:#f4f4f4;
   <div class="panel show" id="tab-analyser">
 
     <div class="steps-bar">
-      <div class="step active" id="step1-bar" onclick="goStep(1)">
+      <div class="step active" id="step1-bar" onclick="currentStep===1?null:resetAndNew()">
         <div class="step-num" id="sn1">1</div>
         <div class="step-text">Paste your story</div>
       </div>
@@ -304,9 +304,11 @@ Acceptance Criteria:
             <div class="rewrite-text" id="rewriteText"></div>
           </div>
           <div class="action-row">
-            <button class="out-btn" id="copyRewriteBtn" onclick="copyRewrite()">📋 Copy improved story</button>
-            <button class="out-btn" onclick="useRewrite()">↑ Re-analyse improved story</button>
-            <button class="out-btn" onclick="goStep(1)">⚡ Analyse new story</button>
+            <button class="out-btn" id="copyRewriteBtn" onclick="copyRewrite()">📋 Copy</button>
+            <button class="out-btn" onclick="downloadDocx()" style="background:#1a4f8a;color:#fff;border-color:#1a4f8a;">📄 Download DOCX</button>
+            <button class="out-btn" onclick="downloadPDF()" style="background:#e3000f;color:#fff;border-color:#e3000f;">📑 Download PDF</button>
+            <button class="out-btn" onclick="useRewrite()">↑ Re-analyse</button>
+            <button class="out-btn" onclick="resetAndNew()" style="background:#0a0a0a;color:#fff;border-color:#0a0a0a;">⚡ Analyse new story</button>
           </div>
         </div>
       </div>
@@ -411,6 +413,48 @@ function goStep(n){
   document.getElementById('step'+n).classList.add('show');
   document.getElementById('step'+n+'-bar').classList.add('active');
   currentStep=n;
+}
+
+function resetAndNew(){
+  // Clear story input
+  document.getElementById('storyInput').value='';
+
+  // Clear prompt box
+  document.getElementById('promptBox').textContent='';
+
+  // Clear Claude response input
+  document.getElementById('resultInput').value='';
+
+  // Clear parse error
+  const pe=document.getElementById('parseError');
+  if(pe){pe.style.display='none';pe.textContent='';}
+
+  // Hide results area
+  document.getElementById('resultsArea').classList.remove('show');
+
+  // Reset score circle
+  document.getElementById('scoreCircle').className='score-circle';
+  document.getElementById('scoreNum').className='score-number';
+  document.getElementById('scoreNum').textContent='—';
+  document.getElementById('scoreVerdict').textContent='—';
+  document.getElementById('scoreSummary').textContent='';
+  document.getElementById('metricsRow').innerHTML='';
+
+  // Clear personas, issues, rewrite
+  document.getElementById('personasGrid').innerHTML='';
+  document.getElementById('issuesList').innerHTML='';
+  document.getElementById('rewriteText').innerHTML='';
+  document.getElementById('rewriteSection').style.display='none';
+
+  // Reset copy buttons
+  const cb=document.getElementById('copyRewriteBtn');
+  if(cb){cb.textContent='📋 Copy';cb.classList.remove('copied');}
+  const cpb=document.getElementById('copyPromptBtn');
+  if(cpb){cpb.textContent='📋 Copy entire prompt';cpb.classList.remove('copied');}
+
+  // Go back to step 1
+  goStep(1);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function loadExample(){
@@ -758,12 +802,181 @@ function copyRewrite(){
   navigator.clipboard.writeText(txt).then(()=>{
     const b=document.getElementById('copyRewriteBtn');
     b.textContent='✅ Copied!';b.classList.add('copied');
-    setTimeout(()=>{b.textContent='📋 Copy improved story';b.classList.remove('copied');},2500);
+    setTimeout(()=>{b.textContent='📋 Copy';b.classList.remove('copied');},2500);
   });
 }
 
+function getStoryPlainText(){
+  return document.getElementById('rewriteText').innerText||'';
+}
+
+function getStoryMeta(){
+  return {
+    score: document.getElementById('scoreNum').textContent||'—',
+    verdict: document.getElementById('scoreVerdict').textContent||'—',
+    summary: document.getElementById('scoreSummary').textContent||'—',
+    date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
+    storyTitle: (document.getElementById('storyInput').value||'').split('\n')[0].substring(0,100)
+  };
+}
+
+// ── PDF DOWNLOAD ─────────────────────────────────────────────────────────────
+function downloadPDF(){
+  const txt = getStoryPlainText();
+  const meta = getStoryMeta();
+  if(!txt){alert('No improved story to download yet.');return;}
+
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>StoryIQ — Improved Story</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Nunito Sans','Segoe UI',sans-serif;color:#0a0a0a;background:#fff;padding:40px;max-width:800px;margin:0 auto;}
+    .header{border-bottom:4px solid #e3000f;padding-bottom:16px;margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;}
+    .brand{font-size:22px;font-weight:700;color:#0a0a0a;letter-spacing:-0.5px;}
+    .brand span{color:#e3000f;}
+    .meta-row{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+    .meta-chip{background:#f4f4f4;border-radius:4px;padding:5px 12px;font-size:12px;font-weight:600;color:#555;}
+    .score-chip{background:#e3000f;color:#fff;border-radius:4px;padding:5px 12px;font-size:12px;font-weight:700;}
+    .story-title{font-size:13px;color:#888;margin-bottom:20px;font-style:italic;border-left:3px solid #e3000f;padding-left:10px;}
+    h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#0a0a0a;margin:20px 0 8px;padding-bottom:5px;border-bottom:1.5px solid #e5e7eb;}
+    .scenario-head{font-size:13px;font-weight:700;color:#0a0a0a;margin:16px 0 6px;padding:6px 10px;background:#f4f4f4;border-left:3px solid #e3000f;}
+    .scenario-head.new{border-left-color:#e3000f;background:#fff5f5;}
+    p{font-size:12px;line-height:1.8;color:#374151;margin:3px 0;}
+    .warn{background:#fffbeb;border:1px solid #fde68a;border-radius:4px;padding:6px 10px;font-size:12px;color:#92400e;margin:5px 0;}
+    .updated{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:5px 10px;font-size:12px;color:#166534;margin:4px 0;}
+    ul{margin:4px 0 4px 16px;padding:0;}
+    li{font-size:12px;color:#374151;line-height:1.8;}
+    .footer{margin-top:32px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#aaa;display:flex;justify-content:space-between;}
+    .given-kw{font-weight:700;color:#e3000f;}
+    @media print{body{padding:20px;}.header{page-break-after:avoid;}}
+  </style>
+  </head><body>
+  <div class="header">
+    <div class="brand">Story<span>IQ</span> — McFadyen Digital</div>
+    <div style="font-size:11px;color:#aaa;">${meta.date}</div>
+  </div>
+  <div class="meta-row">
+    <div class="score-chip">Score: ${meta.score}/100</div>
+    <div class="meta-chip">Verdict: ${meta.verdict}</div>
+    <div class="meta-chip">Generated by StoryIQ</div>
+  </div>
+  <div class="story-title">${escapeHtml(meta.storyTitle)}</div>
+  ${renderForPrint(txt)}
+  <div class="footer">
+    <span>Generated by StoryIQ — McFadyen Digital BA Intelligence Engine</span>
+    <span>${meta.date}</span>
+  </div>
+  <script>window.onload=function(){window.print();}<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function renderForPrint(text){
+  const lines = text.split('\n');
+  let html = '';
+  for(const raw of lines){
+    const line = raw.trim();
+    if(!line){html+='<div style="height:4px;"></div>';continue;}
+    if(/^scenario\s*\d+/i.test(line)){
+      const isNew=/new|added|storyiq/i.test(line);
+      html+=`<div class="scenario-head${isNew?' new':''}">${escapeHtml(line)}</div>`;
+    } else if(/^(assumptions|figma design|business acceptance criteria|mobile experience)/i.test(line)){
+      html+=`<h2>${escapeHtml(line)}</h2>`;
+    } else if(/⚠️/.test(line)){
+      html+=`<div class="warn">${escapeHtml(line)}</div>`;
+    } else if(/updated|changed from|confirmed by/i.test(line)&&!/^scenario/i.test(line)){
+      html+=`<div class="updated">✅ ${escapeHtml(line)}</div>`;
+    } else if(/^(given|when|then|and)\b/i.test(line)){
+      const kw=line.match(/^(given|when|then|and)\b/i)[0];
+      const rest=line.slice(kw.length);
+      html+=`<p><span class="given-kw">${escapeHtml(kw)}</span>${escapeHtml(rest)}</p>`;
+    } else if(/^[-•]\s/.test(line)){
+      html+=`<ul><li>${escapeHtml(line.replace(/^[-•]\s/,''))}</li></ul>`;
+    } else if(/^as a /i.test(line)){
+      html+=`<p style="font-weight:600;color:#0a0a0a;font-size:13px;border-left:3px solid #e3000f;padding-left:8px;margin-bottom:8px;">${escapeHtml(line)}</p>`;
+    } else {
+      html+=`<p>${escapeHtml(line)}</p>`;
+    }
+  }
+  return html;
+}
+
+// ── DOCX DOWNLOAD ─────────────────────────────────────────────────────────────
+function downloadDocx(){
+  const txt = getStoryPlainText();
+  const meta = getStoryMeta();
+  if(!txt){alert('No improved story to download yet.');return;}
+
+  // Build RTF content which opens in Word
+  const lines = txt.split('\n');
+  let rtf = '{\\rtf1\\ansi\\deff0';
+  rtf += '{\\fonttbl{\\f0\\fswiss\\fcharset0 Aptos;}{\\f1\\fswiss\\fcharset0 Calibri;}}';
+  rtf += '{\\colortbl;\\red227\\green0\\blue15;\\red10\\green10\\blue10;\\red55\\green65\\blue81;\\red146\\green64\\blue14;}';
+  rtf += '\\f0\\fs24\\widowctrl\\hyphauto';
+
+  // Header
+  rtf += '{\\pard\\sb200\\sa100\\b\\fs32\\cf2 StoryIQ \\cf1 — McFadyen Digital\\par}';
+  rtf += `{\\pard\\sa80\\fs18\\cf3 Score: ${meta.score}/100   |   ${meta.verdict}   |   ${meta.date}\\par}`;
+  rtf += '{\\pard\\sa200\\brdrb\\brdrs\\brdrw10\\brsp20 \\par}';
+
+  for(const raw of lines){
+    const line = raw.trim();
+    if(!line){rtf+='{\\pard\\sa60 \\par}';continue;}
+
+    if(/^scenario\s*\d+/i.test(line)){
+      const isNew=/new|added|storyiq/i.test(line);
+      rtf+=`{\\pard\\sb180\\sa80\\b\\fs22\\cf${isNew?1:2}\\brdrb\\brdrs\\brdrw5\\brsp20 ${rtfEsc(line)}\\par}`;
+    } else if(/^(assumptions|figma design|business acceptance criteria|mobile experience)/i.test(line)){
+      rtf+=`{\\pard\\sb200\\sa80\\b\\fs20\\cf2\\allcaps ${rtfEsc(line)}\\par}`;
+    } else if(/⚠️/.test(line)){
+      rtf+=`{\\pard\\sb60\\sa60\\cf4\\highlight3\\fs20 ${rtfEsc(line)}\\par}`;
+    } else if(/^(given|when|then|and)\b/i.test(line)){
+      const kw=line.match(/^(given|when|then|and)\b/i)[0];
+      const rest=line.slice(kw.length);
+      rtf+=`{\\pard\\sb40\\sa40\\fs20 {\\b\\cf1 ${rtfEsc(kw)}}\\cf3${rtfEsc(rest)}\\par}`;
+    } else if(/^as a /i.test(line)){
+      rtf+=`{\\pard\\sb100\\sa100\\b\\fs22\\cf2 ${rtfEsc(line)}\\par}`;
+    } else if(/^[-•]\s/.test(line)){
+      rtf+=`{\\pard\\li360\\sb20\\sa20\\fs20\\cf3 \\bullet  ${rtfEsc(line.replace(/^[-•]\s/,''))}\\par}`;
+    } else {
+      rtf+=`{\\pard\\sb20\\sa20\\fs20\\cf3 ${rtfEsc(line)}\\par}`;
+    }
+  }
+
+  // Footer
+  rtf+='{\\pard\\sb200\\brdrb\\brdrs\\brdrw5\\brsp20 \\par}';
+  rtf+=`{\\pard\\sa80\\fs18\\cf3\\i Generated by StoryIQ — McFadyen Digital   |   ${meta.date}\\par}`;
+  rtf+='}';
+
+  const blob = new Blob([rtf],{type:'application/rtf'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeTitle = (meta.storyTitle||'StoryIQ-Story').replace(/[^a-zA-Z0-9\s]/g,'').trim().substring(0,40).replace(/\s+/g,'-');
+  a.href=url;
+  a.download=`StoryIQ-${safeTitle}.rtf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function rtfEsc(s){
+  return (s||'').replace(/\\/g,'\\\\').replace(/[{}]/g,'\\$&')
+    .replace(/[\u0080-\uFFFF]/g,c=>`\\u${c.charCodeAt(0)}?`);
+}
+
 function useRewrite(){
-  const txt=document.getElementById('rewriteText').textContent;
+  const txt=document.getElementById('rewriteText').innerText;
+  // Clear previous state first
+  document.getElementById('resultInput').value='';
+  document.getElementById('promptBox').textContent='';
+  const pe=document.getElementById('parseError');
+  if(pe){pe.style.display='none';}
+  // Set story input to improved story
   document.getElementById('storyInput').value=txt;
   goStep(1);
   window.scrollTo({top:0,behavior:'smooth'});
