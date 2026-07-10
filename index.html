@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint Briefing Card</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; }
+
+  .top-bar { background: #1a1a2e; color: white; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .top-bar h1 { font-size: 16px; font-weight: 600; }
+  .top-bar .meta { font-size: 12px; color: #aaa; }
+  .sprint-badge { background: #e24b4a; color: white; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; }
+  .today-date { font-size: 12px; color: #aaa; }
+
+  .config-section { background: white; border-bottom: 1px solid #e8e8e8; padding: 16px 24px; }
+  .config-title { font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .config-grid input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; color: #333; width: 100%; }
+  .config-grid input[type="password"] { font-family: monospace; }
+  .config-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+  .btn-primary { background: #1a1a2e; color: white; }
+  .btn-primary:hover { background: #2d2d4e; }
+  .btn-secondary { background: #f0f0f0; color: #333; }
+  .btn-secondary:hover { background: #e5e5e5; }
+  .btn-green { background: #10b981; color: white; }
+  .btn-green:hover { background: #059669; }
+  .btn-red { background: #e24b4a; color: white; }
+  .btn-orange { background: #f59e0b; color: white; }
+
+  .status-bar { padding: 8px 24px; font-size: 12px; display: flex; align-items: center; gap: 8px; }
+  .status-bar.loading { background: #eff6ff; color: #1d4ed8; }
+  .status-bar.success { background: #f0fdf4; color: #166534; }
+  .status-bar.error { background: #fef2f2; color: #b91c1c; }
+  .status-bar.hidden { display: none; }
+  .spinner { width: 14px; height: 14px; border: 2px solid #93c5fd; border-top-color: #1d4ed8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .action-bar { background: white; border-bottom: 1px solid #e8e8e8; padding: 10px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .last-sync { font-size: 11px; color: #999; margin-left: auto; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 20px 16px; }
+  .greeting { font-size: 20px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
+  .sprint-info { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+  .summary-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .summary-card { background: white; border-radius: 10px; padding: 14px 16px; border: 1px solid #eee; }
+  .summary-card .label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .summary-card .value { font-size: 28px; font-weight: 700; line-height: 1; }
+  .val-red { color: #e24b4a; } .val-yellow { color: #f59e0b; }
+  .val-green { color: #10b981; } .val-blue { color: #3b82f6; }
+  .val-gray { color: #6b7280; } .val-purple { color: #7c3aed; }
+
+  .section { background: white; border-radius: 10px; border: 1px solid #eee; margin-bottom: 16px; overflow: hidden; }
+  .section-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
+  .section-header h2 { font-size: 13px; font-weight: 600; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+  .count-badge { background: #f0f0f0; color: #666; font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+  .section-body { padding: 12px 16px; }
+
+  .story-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+  .story-row:last-child { border-bottom: none; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .dot-red{background:#e24b4a} .dot-yellow{background:#f59e0b}
+  .dot-green{background:#10b981} .dot-blue{background:#3b82f6}
+  .dot-gray{background:#9ca3af} .dot-purple{background:#7c3aed}
+  .story-info { flex: 1; min-width: 0; }
+  .story-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+  .story-id { font-size: 12px; font-weight: 700; color: #1a1a2e; font-family: monospace; cursor: pointer; text-decoration: none; }
+  .story-id:hover { color: #3b82f6; text-decoration: underline; }
+  .story-title { font-size: 13px; color: #333; }
+  .story-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+  .story-meta span { font-size: 11px; color: #888; }
+  .story-meta strong { color: #555; }
+  .tag { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+  .tag-red{background:#fef2f2;color:#b91c1c} .tag-yellow{background:#fffbeb;color:#92400e}
+  .tag-green{background:#f0fdf4;color:#166534} .tag-blue{background:#eff6ff;color:#1d4ed8}
+  .tag-gray{background:#f9fafb;color:#4b5563} .tag-purple{background:#faf5ff;color:#6d28d9}
+  .tag-orange{background:#fff7ed;color:#c2410c}
+
+  .priority-icon { font-size: 12px; }
+
+  .oq-row { padding: 8px 0; border-bottom: 1px solid #f5f5f5; display: flex; gap: 10px; align-items: flex-start; }
+  .oq-row:last-child { border-bottom: none; }
+  .oq-days { flex-shrink: 0; text-align: center; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; min-width: 44px; }
+  .days-red{background:#fef2f2;color:#b91c1c} .days-yellow{background:#fffbeb;color:#92400e} .days-gray{background:#f9fafb;color:#6b7280}
+  .oq-text { font-size: 12px; color: #333; line-height: 1.5; }
+  .oq-meta { font-size: 11px; color: #999; margin-top: 2px; }
+
+  .decision-row { padding: 8px 0; border-bottom: 1px solid #f5f5f5; display: flex; gap: 10px; align-items: flex-start; }
+  .decision-row:last-child { border-bottom: none; }
+  .dec-icon { width: 24px; height: 24px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+  .dec-text { flex: 1; font-size: 12px; color: #333; line-height: 1.5; }
+  .dec-meta { font-size: 11px; color: #999; margin-top: 2px; }
+
+  .demo-card { padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; }
+  .demo-card:last-child { margin-bottom: 0; }
+  .demo-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .demo-title { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+  .demo-meta { font-size: 11px; color: #888; margin-bottom: 4px; }
+
+  .empty-state { text-align: center; padding: 24px; color: #bbb; font-size: 13px; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; border-radius: 12px; padding: 24px; width: 480px; max-width: 95vw; max-height: 88vh; overflow-y: auto; }
+  .modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #1a1a2e; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; color: #333; font-family: inherit; }
+  .form-group textarea { height: 72px; resize: vertical; }
+  .form-row { display: flex; gap: 10px; }
+  .form-row .form-group { flex: 1; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  .icon-btn { padding: 4px 8px; border: 1px solid #e5e7eb; border-radius: 5px; background: white; font-size: 11px; cursor: pointer; color: #555; }
+  .icon-btn:hover { background: #f9fafb; }
+
+  .setup-hint { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #92400e; line-height: 1.6; }
+  .setup-hint strong { display: block; margin-bottom: 4px; font-size: 14px; }
+
+  @media(max-width:600px){ .config-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="width:32px;height:32px;background:#e24b4a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">📋</div>
+    <div><h1>Sprint Briefing Card</h1><div class="meta" id="topMeta">Daily team briefing — powered by Jira</div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span class="sprint-badge" id="sprintBadge">Sprint —</span>
+    <span class="today-date" id="todayDate"></span>
+  </div>
+</div>
+
+<!-- JIRA CONFIG -->
+<div class="config-section" id="configSection">
+  <div class="config-title">🔌 Connect to Jira — enter once, saved forever</div>
+  <div class="config-grid">
+    <input type="text"     id="cfgDomain"  placeholder="Jira domain e.g. mcfadyen.atlassian.net" />
+    <input type="email"    id="cfgEmail"   placeholder="Your Jira email" />
+    <input type="password" id="cfgToken"   placeholder="Jira API token" />
+    <input type="text"     id="cfgProject" placeholder="Project key e.g. SUFS" />
+    <input type="text"     id="cfgSprint"  placeholder="Sprint name e.g. Sprint 42" />
+    <input type="text"     id="cfgDay"     placeholder="Sprint day e.g. Day 4 of 10" />
+  </div>
+  <div class="config-actions">
+    <button class="btn btn-green" onclick="saveAndConnect()">🔌 Connect & Load Jira</button>
+    <button class="btn btn-secondary" onclick="toggleConfig()">🔼 Hide settings</button>
+    <button class="btn btn-red" onclick="clearAll()">🗑 Clear all data</button>
+  </div>
+</div>
+
+<div class="status-bar hidden" id="statusBar">
+  <div class="spinner" id="statusSpinner" style="display:none"></div>
+  <span id="statusMsg"></span>
+</div>
+
+<!-- ACTION BAR -->
+<div class="action-bar">
+  <button class="btn btn-secondary" onclick="loadJira()">🔄 Refresh from Jira</button>
+  <button class="btn btn-secondary" onclick="openModal('oqModal')">❓ Add Open Question</button>
+  <button class="btn btn-secondary" onclick="openModal('decisionModal')">✅ Log Decision</button>
+  <button class="btn btn-secondary" onclick="openModal('demoModal')">🎯 Add Demo</button>
+  <span class="last-sync" id="lastSync"></span>
+</div>
+
+<div class="main">
+  <div class="greeting" id="greeting"></div>
+  <div class="sprint-info" id="sprintInfo"></div>
+
+  <div class="setup-hint" id="setupHint">
+    <strong>👋 Welcome! One-time setup needed.</strong>
+    Enter your Jira credentials above and click <strong>"Connect & Load Jira"</strong> — your sprint stories will appear automatically. Your token is stored only in your browser, never sent anywhere except Jira.
+  </div>
+
+  <div class="summary-row" id="summaryRow" style="display:none"></div>
+
+  <div class="section" id="riskSection" style="display:none">
+    <div class="section-header">
+      <h2>🔴 At Risk / Blocked <span class="count-badge" id="riskCount">0</span></h2>
+    </div>
+    <div class="section-body" id="riskList"></div>
+  </div>
+
+  <div class="section" id="storiesSection" style="display:none">
+    <div class="section-header">
+      <h2>📋 All Sprint Stories <span class="count-badge" id="allCount">0</span></h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <select id="filterStatus" onchange="renderStories()" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;">
+          <option value="">All statuses</option>
+          <option value="To Do">To Do</option>
+          <option value="In Progress">In Progress</option>
+          <option value="In Review">In Review</option>
+          <option value="Done">Done</option>
+        </select>
+        <select id="filterAssignee" onchange="renderStories()" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;">
+          <option value="">All assignees</option>
+        </select>
+      </div>
+    </div>
+    <div class="section-body" id="allList"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>❓ Open Questions <span class="count-badge" id="oqCount">0</span></h2>
+      <span style="font-size:11px;color:#f59e0b;font-weight:500;" id="oqWarning"></span>
+    </div>
+    <div class="section-body" id="oqList"><div class="empty-state">No open questions logged yet.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>✅ Decisions This Sprint <span class="count-badge" id="decCount">0</span></h2>
+    </div>
+    <div class="section-body" id="decList"><div class="empty-state">No decisions logged yet.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>🎯 Upcoming Demos <span class="count-badge" id="demoCount">0</span></h2>
+    </div>
+    <div class="section-body" id="demoList"><div class="empty-state">No demos scheduled yet.</div></div>
+  </div>
+</div>
+
+<!-- OQ MODAL -->
+<div class="modal-overlay" id="oqModal">
+  <div class="modal">
+    <h3>Add Open Question</h3>
+    <div class="form-group"><label>Question *</label><textarea id="oqText" placeholder="e.g. How is one review per product configured?"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Raised By</label><input type="text" id="oqBy" placeholder="e.g. Vivek" /></div>
+      <div class="form-group"><label>Assigned To</label><input type="text" id="oqAssigned" placeholder="e.g. Geethu" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Related Story</label><input type="text" id="oqStory" placeholder="e.g. SUFS-412" /></div>
+      <div class="form-group"><label>Days Open</label><input type="number" id="oqDays" placeholder="e.g. 3" min="0" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('oqModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveOQ()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DECISION MODAL -->
+<div class="modal-overlay" id="decisionModal">
+  <div class="modal">
+    <h3>Log a Decision</h3>
+    <div class="form-group"><label>Decision *</label><textarea id="decText" placeholder="e.g. Email delay changed from 21 days to 1 day"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Decided By</label><input type="text" id="decBy" placeholder="e.g. Mathew" /></div>
+      <div class="form-group"><label>Date</label><input type="text" id="decDate" placeholder="e.g. Tuesday" /></div>
+    </div>
+    <div class="form-group"><label>Related Story</label><input type="text" id="decStory" placeholder="e.g. SUFS-412" /></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('decisionModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDecision()">Log Decision</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO MODAL -->
+<div class="modal-overlay" id="demoModal">
+  <div class="modal">
+    <h3>Add Demo</h3>
+    <div class="form-group"><label>Demo Title *</label><input type="text" id="demoTitle" placeholder="e.g. Supplier Rating Auto Approval" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Date & Time</label><input type="text" id="demoDateTime" placeholder="e.g. Friday 3pm" /></div>
+      <div class="form-group"><label>Presenter</label><input type="text" id="demoPresenter" placeholder="e.g. Geethu" /></div>
+    </div>
+    <div class="form-group"><label>Readiness</label>
+      <select id="demoReadiness">
+        <option value="ready">✅ Ready to demo</option>
+        <option value="conditional">⚠️ Ready with caveats</option>
+        <option value="not-ready">🔴 Not ready</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Notes</label><textarea id="demoNotes" placeholder="e.g. 2 open questions need answering first"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('demoModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDemo()">Save Demo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const S = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)) } catch { return null } },
+  set: (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+  del: k => localStorage.removeItem(k)
+};
+
+let jiraStories = S.get('sbc_jira') || [];
+let openQs      = S.get('sbc_oqs')  || [];
+let decisions   = S.get('sbc_decs') || [];
+let demos       = S.get('sbc_demos')|| [];
+let cfg         = S.get('sbc_cfg')  || {};
+
+function getGreeting() {
+  const h = new Date().getHours();
+  return h<12 ? 'Good morning team ☀️' : h<17 ? 'Good afternoon team 👋' : 'Good evening team 🌙';
+}
+
+function formatDate() {
+  return new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+
+function showStatus(msg, type, spin=false) {
+  const bar = document.getElementById('statusBar');
+  const sp  = document.getElementById('statusSpinner');
+  const txt = document.getElementById('statusMsg');
+  bar.className = `status-bar ${type}`;
+  sp.style.display = spin ? 'block' : 'none';
+  txt.textContent = msg;
+}
+
+function hideStatus() {
+  document.getElementById('statusBar').className = 'status-bar hidden';
+}
+
+function toggleConfig() {
+  const s = document.getElementById('configSection');
+  s.style.display = s.style.display === 'none' ? '' : 'none';
+}
+
+function loadCfgInputs() {
+  if (cfg.domain)  document.getElementById('cfgDomain').value  = cfg.domain;
+  if (cfg.email)   document.getElementById('cfgEmail').value   = cfg.email;
+  if (cfg.token)   document.getElementById('cfgToken').value   = cfg.token;
+  if (cfg.project) document.getElementById('cfgProject').value = cfg.project;
+  if (cfg.sprint)  document.getElementById('cfgSprint').value  = cfg.sprint;
+  if (cfg.day)     document.getElementById('cfgDay').value     = cfg.day;
+}
+
+function saveAndConnect() {
+  cfg.domain  = document.getElementById('cfgDomain').value.trim().replace(/^https?:\/\//,'').replace(/\/$/,'');
+  cfg.email   = document.getElementById('cfgEmail').value.trim();
+  cfg.token   = document.getElementById('cfgToken').value.trim();
+  cfg.project = document.getElementById('cfgProject').value.trim().toUpperCase();
+  cfg.sprint  = document.getElementById('cfgSprint').value.trim();
+  cfg.day     = document.getElementById('cfgDay').value.trim();
+  if (!cfg.domain || !cfg.email || !cfg.token || !cfg.project) {
+    alert('Please fill in Jira domain, email, token and project key'); return;
+  }
+  S.set('sbc_cfg', cfg);
+  loadJira();
+}
+
+async function loadJira() {
+  if (!cfg.domain || !cfg.email || !cfg.token || !cfg.project) {
+    showStatus('⚙️ Please enter your Jira credentials above and click Connect', 'error');
+    return;
+  }
+  showStatus('Connecting to Jira and loading sprint stories…', 'loading', true);
+
+  const auth = btoa(`${cfg.email}:${cfg.token}`);
+  const base = `https://${cfg.domain}`;
+
+  try {
+    // Step 1: Get active sprint for the board
+    const boardId = '485';
+    const sprintRes = await fetch(
+      `${base}/rest/agile/1.0/board/${boardId}/sprint?state=active`,
+      { headers: { 'Authorization': `Basic ${auth}`, 'Accept': 'application/json' } }
+    );
+
+    if (!sprintRes.ok) {
+      const err = await sprintRes.text();
+      showStatus(`❌ Jira connection failed (${sprintRes.status}). Check your credentials.`, 'error');
+      console.error(err);
+      return;
+    }
+
+    const sprintData = await sprintRes.json();
+    const activeSprints = sprintData.values || [];
+
+    if (activeSprints.length === 0) {
+      showStatus('⚠️ No active sprint found on this board.', 'error');
+      return;
+    }
+
+    const activeSprint = activeSprints[0];
+    const sprintName   = activeSprint.name;
+    const sprintId     = activeSprint.id;
+
+    // Auto-set sprint name if not manually set
+    if (!cfg.sprint) {
+      cfg.sprint = sprintName;
+      S.set('sbc_cfg', cfg);
+      document.getElementById('cfgSprint').value = sprintName;
+    }
+
+    // Step 2: Get all issues in this sprint
+    let allIssues = [];
+    let startAt   = 0;
+    const maxResults = 100;
+
+    while (true) {
+      const issueRes = await fetch(
+        `${base}/rest/agile/1.0/sprint/${sprintId}/issue?startAt=${startAt}&maxResults=${maxResults}&fields=summary,status,assignee,priority,issuetype,updated,comment,labels,fixVersions`,
+        { headers: { 'Authorization': `Basic ${auth}`, 'Accept': 'application/json' } }
+      );
+
+      if (!issueRes.ok) break;
+      const issueData = await issueRes.json();
+      allIssues = allIssues.concat(issueData.issues || []);
+      if (allIssues.length >= issueData.total) break;
+      startAt += maxResults;
+    }
+
+    // Step 3: Map to our format
+    jiraStories = allIssues.map(issue => {
+      const f          = issue.fields;
+      const status     = f.status?.name || 'Unknown';
+      const assignee   = f.assignee?.displayName || 'Unassigned';
+      const priority   = f.priority?.name || 'Medium';
+      const updated    = f.updated ? new Date(f.updated).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+      const lastComment = f.comment?.comments?.slice(-1)[0]?.body?.substring(0,120) || '';
+      const issueType  = f.issuetype?.name || 'Story';
+
+      return {
+        id:       issue.key,
+        title:    f.summary,
+        status,
+        assignee,
+        priority,
+        updated,
+        lastComment: lastComment ? lastComment.replace(/[*_\[\]]/g,'') : '',
+        issueType,
+        url: `${base}/browse/${issue.key}`
+      };
+    });
+
+    S.set('sbc_jira', jiraStories);
+    S.set('sbc_lastSync', new Date().toLocaleTimeString());
+
+    showStatus(`✅ Loaded ${jiraStories.length} stories from ${sprintName}`, 'success');
+    setTimeout(hideStatus, 4000);
+
+    document.getElementById('lastSync').textContent = `Last synced: ${new Date().toLocaleTimeString()}`;
+    document.getElementById('setupHint').style.display = 'none';
+
+    renderAll();
+
+  } catch (e) {
+    showStatus(`❌ Error: ${e.message} — This may be a CORS issue. See note below.`, 'error');
+    console.error(e);
+  }
+}
+
+function getStatusStyle(status) {
+  const s = status.toLowerCase();
+  if (s.includes('done') || s.includes('closed') || s.includes('complete'))
+    return { dot:'dot-green', tag:'tag-green', risk: false };
+  if (s.includes('progress') || s.includes('dev') || s.includes('review'))
+    return { dot:'dot-blue', tag:'tag-blue', risk: false };
+  if (s.includes('block') || s.includes('impediment'))
+    return { dot:'dot-red', tag:'tag-red', risk: true };
+  if (s.includes('qa') || s.includes('test') || s.includes('verify'))
+    return { dot:'dot-purple', tag:'tag-purple', risk: false };
+  if (s.includes('to do') || s.includes('open') || s.includes('backlog'))
+    return { dot:'dot-gray', tag:'tag-gray', risk: false };
+  return { dot:'dot-yellow', tag:'tag-yellow', risk: false };
+}
+
+function getPriorityIcon(p) {
+  if (!p) return '';
+  const l = p.toLowerCase();
+  if (l.includes('highest') || l.includes('blocker')) return '🔴';
+  if (l.includes('high'))   return '🟠';
+  if (l.includes('medium')) return '🟡';
+  if (l.includes('low'))    return '🟢';
+  return '⚪';
+}
+
+function storyCard(s) {
+  const sm = getStatusStyle(s.status);
+  return `
+    <div class="story-row">
+      <div class="status-dot ${sm.dot}"></div>
+      <div class="story-info">
+        <div class="story-top">
+          <a class="story-id" href="${s.url}" target="_blank">${s.id}</a>
+          <span class="story-title">${s.title}</span>
+          <span class="tag ${sm.tag}">${s.status}</span>
+          ${s.priority ? `<span class="priority-icon" title="${s.priority}">${getPriorityIcon(s.priority)}</span>` : ''}
+        </div>
+        <div class="story-meta">
+          ${s.assignee !== 'Unassigned' ? `<span>👤 <strong>${s.assignee}</strong></span>` : '<span>👤 Unassigned</span>'}
+          ${s.updated  ? `<span>🕐 Updated: <strong>${s.updated}</strong></span>` : ''}
+          ${s.issueType ? `<span>📌 ${s.issueType}</span>` : ''}
+        </div>
+        ${s.lastComment ? `<div style="font-size:11px;color:#666;margin-top:3px;font-style:italic;">💬 ${s.lastComment}${s.lastComment.length >= 120 ? '…' : ''}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function renderStories() {
+  const filterStatus   = document.getElementById('filterStatus')?.value   || '';
+  const filterAssignee = document.getElementById('filterAssignee')?.value || '';
+
+  let filtered = jiraStories;
+  if (filterStatus)   filtered = filtered.filter(s => s.status === filterStatus);
+  if (filterAssignee) filtered = filtered.filter(s => s.assignee === filterAssignee);
+
+  const atRisk = filtered.filter(s => getStatusStyle(s.status).risk);
+
+  document.getElementById('riskCount').textContent = atRisk.length;
+  document.getElementById('riskList').innerHTML    = atRisk.length
+    ? atRisk.map(storyCard).join('')
+    : '<div class="empty-state">No at-risk stories — great sprint! 🎉</div>';
+  document.getElementById('riskSection').style.display = '';
+
+  document.getElementById('allCount').textContent  = filtered.length;
+  document.getElementById('allList').innerHTML     = filtered.length
+    ? filtered.map(storyCard).join('')
+    : '<div class="empty-state">No stories match the filter.</div>';
+  document.getElementById('storiesSection').style.display = '';
+}
+
+function renderAll() {
+  document.getElementById('todayDate').textContent  = formatDate();
+  document.getElementById('greeting').textContent   = getGreeting();
+  document.getElementById('sprintBadge').textContent = cfg.sprint || 'Sprint —';
+  document.getElementById('topMeta').textContent    = [cfg.sprint, cfg.day].filter(Boolean).join(' · ') || 'Daily team briefing — powered by Jira';
+  document.getElementById('sprintInfo').textContent = [cfg.sprint, cfg.day].filter(Boolean).join(' — ');
+
+  // Populate assignee filter
+  const assignees = [...new Set(jiraStories.map(s => s.assignee).filter(a => a !== 'Unassigned'))].sort();
+  const sel = document.getElementById('filterAssignee');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All assignees</option>' + assignees.map(a => `<option value="${a}" ${a===cur?'selected':''}>${a}</option>`).join('');
+
+  // Summary cards
+  const done    = jiraStories.filter(s => getStatusStyle(s.status).dot === 'dot-green').length;
+  const inProg  = jiraStories.filter(s => getStatusStyle(s.status).dot === 'dot-blue').length;
+  const atRisk  = jiraStories.filter(s => getStatusStyle(s.status).risk).length;
+  const todo    = jiraStories.filter(s => getStatusStyle(s.status).dot === 'dot-gray').length;
+  const oldOQs  = openQs.filter(q => q.days >= 3).length;
+
+  document.getElementById('summaryRow').style.display = '';
+  document.getElementById('summaryRow').innerHTML = `
+    <div class="summary-card"><div class="label">Total Stories</div><div class="value val-blue">${jiraStories.length}</div></div>
+    <div class="summary-card"><div class="label">At Risk</div><div class="value val-red">${atRisk}</div></div>
+    <div class="summary-card"><div class="label">In Progress</div><div class="value val-blue">${inProg}</div></div>
+    <div class="summary-card"><div class="label">To Do</div><div class="value val-gray">${todo}</div></div>
+    <div class="summary-card"><div class="label">Done</div><div class="value val-green">${done}</div></div>
+    <div class="summary-card"><div class="label">Open Questions</div><div class="value ${openQs.length>0?'val-yellow':'val-green'}">${openQs.length}</div></div>
+    <div class="summary-card"><div class="label">Decisions Logged</div><div class="value val-gray">${decisions.length}</div></div>
+  `;
+
+  renderStories();
+
+  // Open Questions
+  document.getElementById('oqCount').textContent   = openQs.length;
+  document.getElementById('oqWarning').textContent = oldOQs > 0 ? `⚠️ ${oldOQs} open 3+ days` : '';
+  document.getElementById('oqList').innerHTML = openQs.length ? openQs.map(q => {
+    const dc = q.days >= 3 ? 'days-red' : q.days >= 1 ? 'days-yellow' : 'days-gray';
+    return `<div class="oq-row">
+      <div class="oq-days ${dc}">${q.days}d</div>
+      <div style="flex:1;">
+        <div class="oq-text">${q.text}</div>
+        <div class="oq-meta">
+          ${q.by ? `Raised by: <strong>${q.by}</strong>` : ''}
+          ${q.assigned ? ` · Assigned: <strong>${q.assigned}</strong>` : ''}
+          ${q.story ? ` · ${q.story}` : ''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <button class="icon-btn" style="color:green;" onclick="resolveOQ('${q.uid}')">✅ Resolved</button>
+        <button class="icon-btn" style="color:#e24b4a;" onclick="deleteOQ('${q.uid}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty-state">No open questions. All clear! ✅</div>';
+
+  // Decisions
+  document.getElementById('decCount').textContent = decisions.length;
+  document.getElementById('decList').innerHTML = decisions.length ? decisions.map(d => `
+    <div class="decision-row">
+      <div class="dec-icon">✅</div>
+      <div style="flex:1;">
+        <div class="dec-text">${d.text}</div>
+        <div class="dec-meta">
+          ${d.by   ? `By: <strong>${d.by}</strong>` : ''}
+          ${d.date ? ` · ${d.date}` : ''}
+          ${d.story? ` · ${d.story}` : ''}
+        </div>
+      </div>
+      <button class="icon-btn" style="color:#e24b4a;" onclick="deleteDecision('${d.uid}')">🗑</button>
+    </div>`).join('') : '<div class="empty-state">No decisions logged yet.</div>';
+
+  // Demos
+  const rm = { ready:'✅ Ready to demo', conditional:'⚠️ Ready with caveats', 'not-ready':'🔴 Not ready' };
+  const rc = { ready:'tag-green', conditional:'tag-yellow', 'not-ready':'tag-red' };
+  document.getElementById('demoCount').textContent = demos.length;
+  document.getElementById('demoList').innerHTML = demos.length ? demos.map(d => `
+    <div class="demo-card">
+      <div class="demo-top">
+        <div class="demo-title">${d.title}</div>
+        <button class="icon-btn" style="color:#e24b4a;" onclick="deleteDemo('${d.uid}')">🗑</button>
+      </div>
+      <div class="demo-meta">
+        ${d.datetime  ? `📅 ${d.datetime}` : ''}
+        ${d.presenter ? ` · 👤 ${d.presenter}` : ''}
+      </div>
+      <div style="margin-top:4px;">
+        <span class="tag ${rc[d.readiness]}">${rm[d.readiness]}</span>
+        ${d.notes ? `<span style="font-size:11px;color:#888;margin-left:8px;">${d.notes}</span>` : ''}
+      </div>
+    </div>`).join('') : '<div class="empty-state">No demos scheduled yet.</div>';
+}
+
+// OQ
+function saveOQ() {
+  const text = document.getElementById('oqText').value.trim();
+  if (!text) { alert('Please enter a question'); return; }
+  openQs.push({ text, by: document.getElementById('oqBy').value.trim(), assigned: document.getElementById('oqAssigned').value.trim(), story: document.getElementById('oqStory').value.trim(), days: parseInt(document.getElementById('oqDays').value)||0, uid: Date.now().toString() });
+  S.set('sbc_oqs', openQs); closeModal('oqModal'); renderAll();
+}
+function resolveOQ(uid) { openQs = openQs.filter(q=>q.uid!==uid); S.set('sbc_oqs',openQs); renderAll(); }
+function deleteOQ(uid)   { openQs = openQs.filter(q=>q.uid!==uid); S.set('sbc_oqs',openQs); renderAll(); }
+
+// Decisions
+function saveDecision() {
+  const text = document.getElementById('decText').value.trim();
+  if (!text) { alert('Please enter a decision'); return; }
+  decisions.push({ text, by: document.getElementById('decBy').value.trim(), date: document.getElementById('decDate').value.trim(), story: document.getElementById('decStory').value.trim(), uid: Date.now().toString() });
+  S.set('sbc_decs', decisions); closeModal('decisionModal'); renderAll();
+}
+function deleteDecision(uid) { decisions = decisions.filter(d=>d.uid!==uid); S.set('sbc_decs',decisions); renderAll(); }
+
+// Demos
+function saveDemo() {
+  const title = document.getElementById('demoTitle').value.trim();
+  if (!title) { alert('Please enter a demo title'); return; }
+  demos.push({ title, datetime: document.getElementById('demoDateTime').value.trim(), presenter: document.getElementById('demoPresenter').value.trim(), readiness: document.getElementById('demoReadiness').value, notes: document.getElementById('demoNotes').value.trim(), uid: Date.now().toString() });
+  S.set('sbc_demos', demos); closeModal('demoModal'); renderAll();
+}
+function deleteDemo(uid) { demos = demos.filter(d=>d.uid!==uid); S.set('sbc_demos',demos); renderAll(); }
+
+function clearAll() {
+  if (!confirm('Clear ALL data including Jira stories?')) return;
+  jiraStories=[]; openQs=[]; decisions=[]; demos=[]; cfg={};
+  ['sbc_jira','sbc_oqs','sbc_decs','sbc_demos','sbc_cfg','sbc_lastSync'].forEach(k=>S.del(k));
+  ['cfgDomain','cfgEmail','cfgToken','cfgProject','cfgSprint','cfgDay'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('setupHint').style.display='';
+  document.getElementById('summaryRow').style.display='none';
+  document.getElementById('riskSection').style.display='none';
+  document.getElementById('storiesSection').style.display='none';
+  renderAll();
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.querySelectorAll(`#${id} input, #${id} textarea, #${id} select`).forEach(el => { if(el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; });
+}
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) closeModal(m.id); }));
+
+// Init
+loadCfgInputs();
+document.getElementById('todayDate').textContent = formatDate();
+document.getElementById('greeting').textContent  = getGreeting();
+document.getElementById('sprintBadge').textContent = cfg.sprint || 'Sprint —';
+if (cfg.sprint) document.getElementById('sprintInfo').textContent = [cfg.sprint, cfg.day].filter(Boolean).join(' — ');
+
+const lastSync = S.get('sbc_lastSync');
+if (lastSync) document.getElementById('lastSync').textContent = `Last synced: ${lastSync}`;
+
+if (jiraStories.length > 0) {
+  document.getElementById('setupHint').style.display = 'none';
+  renderAll();
+}
+</script>
+</body>
+</html>
