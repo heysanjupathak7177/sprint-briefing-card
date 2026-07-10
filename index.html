@@ -3,20 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StoryIQ — BA Story Intelligence Engine</title>
+<title>StoryIQ — McFadyen Digital BA Intelligence</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f6f8;min-height:100vh;color:#1a1a2e;}
+body{font-family:'Aptos','Nunito Sans','Segoe UI',sans-serif;background:#f4f4f4;min-height:100vh;color:#0a0a0a;}
 
-.topbar{background:#1a1a2e;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-.logo-row{display:flex;align-items:center;gap:12px;}
-.logo{width:34px;height:34px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
-.app-name{font-size:17px;font-weight:700;color:#fff;}
-.app-tag{font-size:11px;color:#888;}
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.nav-btn{padding:6px 14px;border:1px solid #3a3a5c;border-radius:6px;background:transparent;color:#ccc;font-size:12px;cursor:pointer;}
-.nav-btn.active{background:#6366f1;border-color:#6366f1;color:#fff;}
-.nav-btn:hover{border-color:#6366f1;color:#fff;}
+.topbar{background:#0a0a0a;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:3px solid #e3000f;}
+.logo-row{display:flex;align-items:center;gap:16px;padding:10px 0;}
+.logo{display:flex;align-items:center;}
+.logo img{height:32px;width:auto;}
+.app-divider{width:1px;height:28px;background:#333;}
+.app-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.2px;}
+.app-tag{font-size:10px;color:#888;margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.nav-btn{padding:6px 14px;border:1px solid #333;border-radius:4px;background:transparent;color:#aaa;font-size:12px;cursor:pointer;font-family:inherit;}
+.nav-btn.active{background:#e3000f;border-color:#e3000f;color:#fff;}
+.nav-btn:hover{border-color:#e3000f;color:#fff;}
 
 .main{max-width:1000px;margin:0 auto;padding:24px 16px;}
 
@@ -24,13 +27,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .steps-bar{display:flex;align-items:center;gap:0;margin-bottom:24px;background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;}
 .step{flex:1;padding:14px 16px;display:flex;align-items:center;gap:10px;border-right:1px solid #e5e7eb;cursor:pointer;transition:background 0.15s;}
 .step:last-child{border-right:none;}
-.step.active{background:#f0f0ff;}
+.step.active{background:#fff5f5;}
 .step.done{background:#f0fdf4;}
 .step-num{width:24px;height:24px;border-radius:50%;background:#e5e7eb;color:#888;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.step.active .step-num{background:#6366f1;color:#fff;}
+.step.active .step-num{background:#e3000f;color:#fff;}
 .step.done .step-num{background:#10b981;color:#fff;}
 .step-text{font-size:12px;font-weight:500;color:#888;}
-.step.active .step-text{color:#6366f1;}
+.step.active .step-text{color:#e3000f;}
 .step.done .step-text{color:#10b981;}
 
 /* PANELS */
@@ -39,30 +42,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* STEP 1 */
 .card{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:20px;margin-bottom:16px;}
-.card-title{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.story-input{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:160px;line-height:1.7;color:#1a1a2e;}
-.story-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.1);}
+.card-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:#0a0a0a;}
+.story-input{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:160px;line-height:1.7;color:#0a0a0a;}
+.story-input:focus{outline:none;border-color:#e3000f;box-shadow:0 0 0 3px rgba(227,0,15,0.08);}
 .row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px;}
 .small-btn{padding:6px 12px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb;font-size:12px;cursor:pointer;color:#555;}
 .small-btn:hover{background:#f3f4f6;}
-.primary-btn{padding:10px 24px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
-.primary-btn:hover{background:#4f46e5;}
-.dark-btn{padding:10px 24px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
-.dark-btn:hover{background:#2d2d4e;}
+.primary-btn{padding:10px 24px;background:#e3000f;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.primary-btn:hover{background:#b8000c;}
+.dark-btn{padding:10px 24px;background:#0a0a0a;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.dark-btn:hover{background:#222;}
 
 /* STEP 2 — PROMPT BOX */
-.prompt-box{background:#1a1a2e;border-radius:10px;padding:16px 18px;font-family:monospace;font-size:12px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow-y:auto;margin-bottom:12px;}
-.copy-prompt-btn{width:100%;padding:12px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px;}
-.copy-prompt-btn:hover{background:#4f46e5;}
+.prompt-box{background:#0a0a0a;border-radius:10px;padding:16px 18px;font-family:monospace;font-size:12px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow-y:auto;margin-bottom:12px;}
+.copy-prompt-btn{width:100%;padding:12px;background:#e3000f;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px;font-family:inherit;}
+.copy-prompt-btn:hover{background:#b8000c;}
 .copy-prompt-btn.copied{background:#10b981;}
-.claude-link{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border:2px solid #6366f1;border-radius:8px;font-size:13px;font-weight:600;color:#6366f1;text-decoration:none;margin-bottom:14px;}
-.claude-link:hover{background:#f0f0ff;}
+.claude-link{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border:2px solid #e3000f;border-radius:6px;font-size:13px;font-weight:600;color:#e3000f;text-decoration:none;margin-bottom:14px;font-family:inherit;}
+.claude-link:hover{background:#fff5f5;}
 .instruction-steps{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;font-size:12px;color:#92400e;line-height:2;}
 .instruction-steps strong{display:block;font-size:13px;margin-bottom:4px;}
 
 /* STEP 3 — PASTE RESULT */
-.result-input{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical;min-height:200px;line-height:1.6;color:#1a1a2e;}
-.result-input:focus{outline:none;border-color:#6366f1;}
+.result-input{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical;min-height:200px;line-height:1.6;color:#0a0a0a;}
+.result-input:focus{outline:none;border-color:#e3000f;}
 
 /* STEP 4 — DISPLAY */
 .score-banner{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
@@ -114,9 +117,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .i-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}
 .it-c{color:#b91c1c;} .it-w{color:#92400e;} .it-p{color:#166534;}
 .i-text{font-size:12px;line-height:1.6;color:#374151;}
-.i-fix{font-size:11px;color:#6366f1;margin-top:3px;font-style:italic;}
+.i-fix{font-size:11px;color:#e3000f;margin-top:3px;font-style:italic;}
 
-.rewrite-box{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px 22px;border-top:4px solid #6366f1;}
+.rewrite-box{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px 22px;border-top:4px solid #e3000f;}
 .rewrite-text{font-size:13px;line-height:1.8;color:#1a1a2e;white-space:pre-wrap;}
 .action-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
 .out-btn{padding:7px 14px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;font-size:12px;cursor:pointer;color:#374151;font-weight:500;}
@@ -145,7 +148,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .trend-card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:14px 16px;}
 .trend-label{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
 .trend-value{font-size:26px;font-weight:700;}
-.tv-blue{color:#6366f1;} .tv-green{color:#10b981;} .tv-amber{color:#f59e0b;} .tv-red{color:#ef4444;}
+.tv-blue{color:#e3000f;} .tv-green{color:#10b981;} .tv-amber{color:#f59e0b;} .tv-red{color:#ef4444;}
 
 .error-box{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px 16px;font-size:13px;color:#b91c1c;margin-bottom:12px;}
 
@@ -160,10 +163,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="topbar">
   <div class="logo-row">
-    <div class="logo">⚡</div>
+    <div class="logo">
+      <img src="https://mcfadyen.com/wp-content/uploads/2025/04/mcf_logo_no-border-1024x382.png" alt="McFadyen Digital" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+      <div style="display:none;width:120px;height:32px;background:#e3000f;border-radius:4px;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;">McFadyen</div>
+    </div>
+    <div class="app-divider"></div>
     <div>
       <div class="app-name">StoryIQ</div>
-      <div class="app-tag">BA Story Intelligence Engine — Zero cost</div>
+      <div class="app-tag">BA Story Intelligence Engine</div>
     </div>
   </div>
   <div class="topbar-right">
@@ -172,6 +179,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="nav-btn" onclick="showTab('trends')">Trends</button>
     <button class="nav-btn" onclick="showTab('help')">How to use</button>
   </div>
+</div>
+
+<div style="background:#fff;border-bottom:1px solid #e5e7eb;padding:9px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+  <span style="font-size:11px;font-weight:700;color:#e3000f;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;">💡 Pro tip:</span>
+  <span style="font-size:11px;color:#666;line-height:1.5;">This manual 4-step process can be fully automated — provide a Jira ticket number, Claude API token and Jira API token, and StoryIQ will fetch the story, analyse it and return the improved version in one click with zero copy-paste needed.</span>
 </div>
 
 <div class="main">
@@ -355,10 +367,10 @@ Acceptance Criteria:
     <div class="card" style="margin-top:16px;">
       <div class="card-title">📋 How to use — 4 steps</div>
       <div style="font-size:13px;color:#555;line-height:2.2;">
-        <strong style="color:#6366f1;">Step 1</strong> — Paste your user story into the Analyser tab<br>
-        <strong style="color:#6366f1;">Step 2</strong> — Click "Generate prompt" — StoryIQ builds the perfect Claude prompt automatically<br>
-        <strong style="color:#6366f1;">Step 3</strong> — Copy the prompt → paste into Claude.ai → copy Claude's response<br>
-        <strong style="color:#6366f1;">Step 4</strong> — Paste the response back → StoryIQ displays your full analysis beautifully<br><br>
+        <strong style="color:#e3000f;">Step 1</strong> — Paste your user story into the Analyser tab<br>
+        <strong style="color:#e3000f;">Step 2</strong> — Click "Generate prompt" — StoryIQ builds the perfect Claude prompt automatically<br>
+        <strong style="color:#e3000f;">Step 3</strong> — Copy the prompt → paste into Claude.ai → copy Claude's response<br>
+        <strong style="color:#e3000f;">Step 4</strong> — Paste the response back → StoryIQ displays your full analysis beautifully<br><br>
         <strong>Cost: £0. Uses your existing Claude.ai subscription.</strong>
       </div>
     </div>
@@ -652,7 +664,7 @@ function formatStory(text){
     // User story opening line
     if(/^as a /i.test(line)&&i<3){
       closeList();
-      html+=`<div style="background:#f0f0ff;border-left:4px solid #6366f1;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:16px;font-size:13px;font-weight:600;color:#4338ca;line-height:1.7;">${escHtml(line)}</div>`;
+      html+=`<div style="background:#f0f0ff;border-left:4px solid #e3000f;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:16px;font-size:13px;font-weight:600;color:#b8000c;line-height:1.7;">${escHtml(line)}</div>`;
       continue;
     }
 
@@ -660,7 +672,7 @@ function formatStory(text){
     if(/^scenario\s*\d+/i.test(line)){
       closeList();
       const isNew=/new|added|storyiq/i.test(line);
-      const col=isNew?'#6366f1':'#1a1a2e';
+      const col=isNew?'#e3000f':'#1a1a2e';
       html+=`<div style="margin:22px 0 10px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="height:2px;flex:1;background:${col};border-radius:2px;opacity:0.3;"></div>
@@ -700,7 +712,7 @@ function formatStory(text){
       const kw=line.match(/^(given|when|then|and)\b/i)[0];
       const rest=line.slice(kw.length);
       html+=`<div style="margin:5px 0;font-size:12px;line-height:1.7;display:flex;gap:6px;align-items:flex-start;">
-        <span style="font-weight:700;color:#6366f1;min-width:46px;flex-shrink:0;">${escHtml(kw)}</span>
+        <span style="font-weight:700;color:#e3000f;min-width:46px;flex-shrink:0;">${escHtml(kw)}</span>
         <span style="color:#374151;">${escHtml(rest)}</span>
       </div>`;
       continue;
@@ -711,7 +723,7 @@ function formatStory(text){
       if(!inList||listType!=='ul'){closeList();html+='<ul style="margin:6px 0 6px 0;padding:0;list-style:none;">'; inList=true;listType='ul';}
       const b=line.replace(/^[-•]\s/,'');
       html+=`<li style="font-size:12px;color:#374151;line-height:1.8;padding:1px 0;display:flex;gap:8px;align-items:flex-start;">
-        <span style="color:#6366f1;flex-shrink:0;margin-top:3px;">▸</span><span>${escHtml(b)}</span></li>`;
+        <span style="color:#e3000f;flex-shrink:0;margin-top:3px;">▸</span><span>${escHtml(b)}</span></li>`;
       continue;
     }
 
@@ -728,7 +740,7 @@ function formatStory(text){
       const prev=lines[i-1]?.trim()||'';
       if(prev.endsWith(':')||/^(include|then the|review|nickname|email|rating|media|cta|product|a standard)/i.test(line)){
         closeList();
-        html+=`<div style="font-size:12px;color:#374151;padding:2px 0 2px 16px;border-left:3px solid #e5e7eb;margin:2px 0 2px 4px;line-height:1.7;">${escHtml(line)}</div>`;
+        html+=`<div style="font-size:12px;color:#374151;padding:2px 0 2px 16px;border-left:3px solid #e3000f;margin:2px 0 2px 4px;line-height:1.7;">${escHtml(line)}</div>`;
         continue;
       }
     }
