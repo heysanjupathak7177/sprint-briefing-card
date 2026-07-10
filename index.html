@@ -5,564 +5,724 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StoryIQ — BA Story Intelligence Engine</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f5f6f8; min-height:100vh; color:#1a1a2e; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f6f8;min-height:100vh;color:#1a1a2e;}
 
-.topbar { background:#1a1a2e; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
-.topbar-left { display:flex; align-items:center; gap:12px; }
-.logo { width:34px; height:34px; background:#6366f1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; }
-.app-name { font-size:17px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
-.app-tag { font-size:11px; color:#888; }
-.api-zone { display:flex; align-items:center; gap:8px; }
-.api-zone input { padding:7px 12px; border:1px solid #3a3a5c; border-radius:6px; background:#2a2a42; color:#fff; font-size:12px; width:260px; font-family:monospace; }
-.api-zone input::placeholder { color:#666; }
-.api-zone button { padding:7px 14px; border:none; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; background:#6366f1; color:#fff; white-space:nowrap; }
-.api-zone button:hover { background:#4f46e5; }
-.api-status { font-size:11px; padding:4px 10px; border-radius:12px; font-weight:500; }
-.api-status.connected { background:#dcfce7; color:#166534; }
-.api-status.disconnected { background:#fef2f2; color:#b91c1c; }
+.topbar{background:#1a1a2e;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.logo-row{display:flex;align-items:center;gap:12px;}
+.logo{width:34px;height:34px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.app-name{font-size:17px;font-weight:700;color:#fff;}
+.app-tag{font-size:11px;color:#888;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.nav-btn{padding:6px 14px;border:1px solid #3a3a5c;border-radius:6px;background:transparent;color:#ccc;font-size:12px;cursor:pointer;}
+.nav-btn.active{background:#6366f1;border-color:#6366f1;color:#fff;}
+.nav-btn:hover{border-color:#6366f1;color:#fff;}
 
-.setup-banner { background:#fffbeb; border-bottom:1px solid #fde68a; padding:12px 24px; font-size:13px; color:#92400e; display:flex; align-items:center; gap:8px; }
-.setup-banner.hidden { display:none; }
+.main{max-width:1000px;margin:0 auto;padding:24px 16px;}
 
-.main { max-width:1100px; margin:0 auto; padding:24px 16px; }
+/* STEP FLOW */
+.steps-bar{display:flex;align-items:center;gap:0;margin-bottom:24px;background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;}
+.step{flex:1;padding:14px 16px;display:flex;align-items:center;gap:10px;border-right:1px solid #e5e7eb;cursor:pointer;transition:background 0.15s;}
+.step:last-child{border-right:none;}
+.step.active{background:#f0f0ff;}
+.step.done{background:#f0fdf4;}
+.step-num{width:24px;height:24px;border-radius:50%;background:#e5e7eb;color:#888;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step.active .step-num{background:#6366f1;color:#fff;}
+.step.done .step-num{background:#10b981;color:#fff;}
+.step-text{font-size:12px;font-weight:500;color:#888;}
+.step.active .step-text{color:#6366f1;}
+.step.done .step-text{color:#10b981;}
 
-.input-section { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:20px; }
-.input-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
-.input-header h2 { font-size:15px; font-weight:600; }
-.example-btn { font-size:11px; padding:4px 10px; border:1px solid #e5e7eb; border-radius:5px; background:#f9fafb; cursor:pointer; color:#555; }
-.example-btn:hover { background:#f3f4f6; }
-.story-input { width:100%; padding:12px 14px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:inherit; resize:vertical; min-height:140px; line-height:1.7; color:#1a1a2e; }
-.story-input:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
-.input-footer { display:flex; align-items:center; justify-content:space-between; margin-top:12px; flex-wrap:wrap; gap:8px; }
-.char-count { font-size:11px; color:#999; }
-.analyse-btn { padding:10px 28px; background:#1a1a2e; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; }
-.analyse-btn:hover { background:#2d2d4e; }
-.analyse-btn:disabled { background:#9ca3af; cursor:not-allowed; }
+/* PANELS */
+.panel{display:none;}
+.panel.show{display:block;}
 
-.loading-bar { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:32px; text-align:center; display:none; }
-.loading-bar.show { display:block; }
-.spinner { width:36px; height:36px; border:3px solid #e5e7eb; border-top-color:#6366f1; border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px; }
-@keyframes spin { to { transform:rotate(360deg); } }
-.loading-steps { font-size:13px; color:#666; margin-top:8px; }
+/* STEP 1 */
+.card{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:20px;margin-bottom:16px;}
+.card-title{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.story-input{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:160px;line-height:1.7;color:#1a1a2e;}
+.story-input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.1);}
+.row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px;}
+.small-btn{padding:6px 12px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb;font-size:12px;cursor:pointer;color:#555;}
+.small-btn:hover{background:#f3f4f6;}
+.primary-btn{padding:10px 24px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+.primary-btn:hover{background:#4f46e5;}
+.dark-btn{padding:10px 24px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+.dark-btn:hover{background:#2d2d4e;}
 
-.results { display:none; }
-.results.show { display:block; }
+/* STEP 2 — PROMPT BOX */
+.prompt-box{background:#1a1a2e;border-radius:10px;padding:16px 18px;font-family:monospace;font-size:12px;color:#e2e8f0;line-height:1.8;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow-y:auto;margin-bottom:12px;}
+.copy-prompt-btn{width:100%;padding:12px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+.copy-prompt-btn:hover{background:#4f46e5;}
+.copy-prompt-btn.copied{background:#10b981;}
+.claude-link{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border:2px solid #6366f1;border-radius:8px;font-size:13px;font-weight:600;color:#6366f1;text-decoration:none;margin-bottom:14px;}
+.claude-link:hover{background:#f0f0ff;}
+.instruction-steps{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;font-size:12px;color:#92400e;line-height:2;}
+.instruction-steps strong{display:block;font-size:13px;margin-bottom:4px;}
 
-.score-banner { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:16px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
-.score-circle { width:80px; height:80px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; border:4px solid #e5e7eb; }
-.score-circle.red { border-color:#ef4444; }
-.score-circle.amber { border-color:#f59e0b; }
-.score-circle.green { border-color:#10b981; }
-.score-number { font-size:30px; font-weight:700; line-height:1; }
-.score-number.red { color:#ef4444; }
-.score-number.amber { color:#f59e0b; }
-.score-number.green { color:#10b981; }
-.score-denom { font-size:11px; color:#999; }
-.score-right { flex:1; min-width:200px; }
-.score-verdict { font-size:18px; font-weight:700; margin-bottom:4px; }
-.score-summary { font-size:13px; color:#666; line-height:1.6; margin-bottom:10px; }
-.score-metrics { display:flex; gap:8px; flex-wrap:wrap; }
-.metric-pill { font-size:11px; padding:3px 10px; border-radius:12px; font-weight:500; }
-.mp-red { background:#fef2f2; color:#b91c1c; }
-.mp-amber { background:#fffbeb; color:#92400e; }
-.mp-green { background:#f0fdf4; color:#166534; }
-.mp-blue { background:#eff6ff; color:#1d4ed8; }
+/* STEP 3 — PASTE RESULT */
+.result-input{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:monospace;resize:vertical;min-height:200px;line-height:1.6;color:#1a1a2e;}
+.result-input:focus{outline:none;border-color:#6366f1;}
 
-.section { background:#fff; border-radius:12px; border:1px solid #e5e7eb; margin-bottom:16px; overflow:hidden; }
-.section-head { padding:14px 18px; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; justify-content:space-between; }
-.section-head h3 { font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; }
-.section-body { padding:16px 18px; }
+/* STEP 4 — DISPLAY */
+.score-banner{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.score-circle{width:80px;height:80px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:4px solid #e5e7eb;}
+.score-circle.red{border-color:#ef4444;}
+.score-circle.amber{border-color:#f59e0b;}
+.score-circle.green{border-color:#10b981;}
+.score-number{font-size:30px;font-weight:700;line-height:1;}
+.score-number.red{color:#ef4444;}
+.score-number.amber{color:#f59e0b;}
+.score-number.green{color:#10b981;}
+.score-denom{font-size:11px;color:#999;}
+.score-right{flex:1;min-width:180px;}
+.score-verdict{font-size:18px;font-weight:700;margin-bottom:4px;}
+.score-summary{font-size:13px;color:#666;line-height:1.6;margin-bottom:10px;}
+.metrics-row{display:flex;gap:8px;flex-wrap:wrap;}
+.metric-pill{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:500;}
+.mp-red{background:#fef2f2;color:#b91c1c;}
+.mp-amber{background:#fffbeb;color:#92400e;}
+.mp-green{background:#f0fdf4;color:#166534;}
 
-.personas-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
-.persona-card { border:1px solid #e5e7eb; border-radius:10px; padding:14px; }
-.persona-card.has-conflict { border-color:#fca5a5; background:#fef2f2; }
-.persona-card.has-warning { border-color:#fcd34d; background:#fffbeb; }
-.persona-card.clear { border-color:#6ee7b7; background:#f0fdf4; }
-.persona-top { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-.persona-emoji { font-size:24px; }
-.persona-name { font-size:13px; font-weight:600; color:#1a1a2e; }
-.persona-role { font-size:11px; color:#888; }
-.persona-reads { font-size:12px; color:#374151; line-height:1.6; margin-bottom:8px; }
-.persona-conflict { font-size:11px; padding:6px 9px; border-radius:6px; line-height:1.5; }
-.pc-red { background:#fee2e2; color:#991b1b; }
-.pc-yellow { background:#fef3c7; color:#92400e; }
-.pc-green { background:#dcfce7; color:#166534; }
+.section{background:#fff;border-radius:12px;border:1px solid #e5e7eb;margin-bottom:16px;overflow:hidden;}
+.section-head{padding:13px 18px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;}
+.section-head h3{font-size:13px;font-weight:600;}
+.section-body{padding:16px 18px;}
 
-.issues-list { display:flex; flex-direction:column; gap:8px; }
-.issue-row { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:8px; }
-.ir-critical { background:#fef2f2; border:1px solid #fecaca; }
-.ir-warning { background:#fffbeb; border:1px solid #fde68a; }
-.ir-pass { background:#f0fdf4; border:1px solid #bbf7d0; }
-.issue-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
-.issue-content { flex:1; }
-.issue-type { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
-.it-critical { color:#b91c1c; }
-.it-warning { color:#92400e; }
-.it-pass { color:#166534; }
-.issue-text { font-size:12px; line-height:1.6; color:#374151; }
-.issue-fix { font-size:11px; color:#6366f1; margin-top:4px; font-style:italic; }
+.personas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
+.persona-card{border:1px solid #e5e7eb;border-radius:10px;padding:13px;}
+.persona-card.conflict{border-color:#fca5a5;background:#fef2f2;}
+.persona-card.warning{border-color:#fcd34d;background:#fffbeb;}
+.persona-card.clear{border-color:#6ee7b7;background:#f0fdf4;}
+.persona-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.p-emoji{font-size:22px;}
+.p-name{font-size:13px;font-weight:600;}
+.p-role{font-size:10px;color:#888;}
+.p-reads{font-size:12px;color:#374151;line-height:1.6;margin-bottom:7px;}
+.p-conflict{font-size:11px;padding:5px 8px;border-radius:6px;line-height:1.5;}
+.pc-red{background:#fee2e2;color:#991b1b;}
+.pc-yellow{background:#fef3c7;color:#92400e;}
+.pc-green{background:#dcfce7;color:#166534;}
 
-.rewrite-box { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px 16px; border-left:4px solid #6366f1; }
-.rewrite-text { font-size:13px; line-height:1.8; color:#1a1a2e; white-space:pre-wrap; }
-.rewrite-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-.copy-btn { padding:7px 14px; border:1px solid #e5e7eb; border-radius:6px; background:#fff; font-size:12px; cursor:pointer; color:#374151; font-weight:500; }
-.copy-btn:hover { background:#f9fafb; }
-.copy-btn.copied { background:#f0fdf4; color:#166534; border-color:#bbf7d0; }
+.issues-list{display:flex;flex-direction:column;gap:7px;}
+.issue-row{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:8px;}
+.ir-c{background:#fef2f2;border:1px solid #fecaca;}
+.ir-w{background:#fffbeb;border:1px solid #fde68a;}
+.ir-p{background:#f0fdf4;border:1px solid #bbf7d0;}
+.i-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.i-body{flex:1;}
+.i-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}
+.it-c{color:#b91c1c;} .it-w{color:#92400e;} .it-p{color:#166534;}
+.i-text{font-size:12px;line-height:1.6;color:#374151;}
+.i-fix{font-size:11px;color:#6366f1;margin-top:3px;font-style:italic;}
 
-.history-section { background:#fff; border-radius:12px; border:1px solid #e5e7eb; margin-bottom:16px; }
-.history-item { padding:12px 18px; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; gap:12px; cursor:pointer; }
-.history-item:last-child { border-bottom:none; }
-.history-item:hover { background:#f9fafb; }
-.h-score { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
-.hs-red { background:#fef2f2; color:#b91c1c; border:2px solid #fecaca; }
-.hs-amber { background:#fffbeb; color:#92400e; border:2px solid #fde68a; }
-.hs-green { background:#f0fdf4; color:#166534; border:2px solid #bbf7d0; }
-.h-meta { flex:1; min-width:0; }
-.h-title { font-size:12px; font-weight:500; color:#1a1a2e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.h-date { font-size:11px; color:#999; margin-top:2px; }
-.h-verdict { font-size:11px; padding:2px 8px; border-radius:10px; font-weight:500; white-space:nowrap; }
-.hv-red { background:#fef2f2; color:#b91c1c; }
-.hv-amber { background:#fffbeb; color:#92400e; }
-.hv-green { background:#f0fdf4; color:#166534; }
-.clear-history { font-size:11px; color:#ef4444; cursor:pointer; padding:4px 8px; }
-.clear-history:hover { text-decoration:underline; }
+.rewrite-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;border-left:4px solid #6366f1;}
+.rewrite-text{font-size:13px;line-height:1.8;color:#1a1a2e;white-space:pre-wrap;}
+.action-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.out-btn{padding:7px 14px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;font-size:12px;cursor:pointer;color:#374151;font-weight:500;}
+.out-btn:hover{background:#f9fafb;}
+.out-btn.copied{background:#f0fdf4;color:#166534;border-color:#bbf7d0;}
 
-.empty-history { padding:24px; text-align:center; color:#bbb; font-size:13px; }
+/* HISTORY */
+.history-item{padding:12px 18px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.history-item:last-child{border-bottom:none;}
+.history-item:hover{background:#f9fafb;}
+.h-score{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.hs-r{background:#fef2f2;color:#b91c1c;border:2px solid #fecaca;}
+.hs-a{background:#fffbeb;color:#92400e;border:2px solid #fde68a;}
+.hs-g{background:#f0fdf4;color:#166534;border:2px solid #bbf7d0;}
+.h-meta{flex:1;min-width:0;}
+.h-title{font-size:12px;font-weight:500;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.h-date{font-size:11px;color:#999;margin-top:2px;}
+.h-verdict{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap;}
+.hv-r{background:#fef2f2;color:#b91c1c;}
+.hv-a{background:#fffbeb;color:#92400e;}
+.hv-g{background:#f0fdf4;color:#166534;}
+.empty-state{padding:28px;text-align:center;color:#bbb;font-size:13px;}
 
-.badge { font-size:10px; padding:2px 7px; border-radius:10px; font-weight:600; white-space:nowrap; }
-.badge-red { background:#fef2f2; color:#b91c1c; }
-.badge-amber { background:#fffbeb; color:#92400e; }
-.badge-green { background:#f0fdf4; color:#166534; }
+/* TREND */
+.trend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
+.trend-card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:14px 16px;}
+.trend-label{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.trend-value{font-size:26px;font-weight:700;}
+.tv-blue{color:#6366f1;} .tv-green{color:#10b981;} .tv-amber{color:#f59e0b;} .tv-red{color:#ef4444;}
 
-@media(max-width:600px) {
-  .api-zone input { width:180px; }
-  .topbar { padding:10px 14px; }
-  .main { padding:14px 10px; }
+.error-box{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px 16px;font-size:13px;color:#b91c1c;margin-bottom:12px;}
+
+@media(max-width:600px){
+  .steps-bar{flex-direction:column;}
+  .step{border-right:none;border-bottom:1px solid #e5e7eb;}
+  .step:last-child{border-bottom:none;}
 }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-left">
+  <div class="logo-row">
     <div class="logo">⚡</div>
     <div>
       <div class="app-name">StoryIQ</div>
-      <div class="app-tag">BA Story Intelligence Engine</div>
+      <div class="app-tag">BA Story Intelligence Engine — Zero cost</div>
     </div>
   </div>
-  <div class="api-zone">
-    <span class="api-status disconnected" id="apiStatus">Not connected</span>
-    <input type="password" id="apiKeyInput" placeholder="Paste your Claude API key…" />
-    <button onclick="saveApiKey()">Connect</button>
+  <div class="topbar-right">
+    <button class="nav-btn active" onclick="showTab('analyser')">Analyser</button>
+    <button class="nav-btn" onclick="showTab('history')">History</button>
+    <button class="nav-btn" onclick="showTab('trends')">Trends</button>
+    <button class="nav-btn" onclick="showTab('help')">How to use</button>
   </div>
-</div>
-
-<div class="setup-banner" id="setupBanner">
-  ⚡ <strong>First time?</strong> &nbsp;Paste your Claude API key above and click Connect. Your key is stored only in your browser — never sent anywhere except Anthropic's API. Get a key at <strong>console.anthropic.com</strong>
 </div>
 
 <div class="main">
 
-  <div class="input-section">
-    <div class="input-header">
-      <h2>📋 Paste your user story</h2>
-      <button class="example-btn" onclick="loadExample()">Load example story</button>
+  <!-- ANALYSER TAB -->
+  <div class="panel show" id="tab-analyser">
+
+    <div class="steps-bar">
+      <div class="step active" id="step1-bar" onclick="goStep(1)">
+        <div class="step-num" id="sn1">1</div>
+        <div class="step-text">Paste your story</div>
+      </div>
+      <div class="step" id="step2-bar" onclick="goStep(2)">
+        <div class="step-num" id="sn2">2</div>
+        <div class="step-text">Copy prompt</div>
+      </div>
+      <div class="step" id="step3-bar" onclick="goStep(3)">
+        <div class="step-num" id="sn3">3</div>
+        <div class="step-text">Paste Claude's response</div>
+      </div>
+      <div class="step" id="step4-bar" onclick="goStep(4)">
+        <div class="step-num" id="sn4">4</div>
+        <div class="step-text">View analysis</div>
+      </div>
     </div>
-    <textarea class="story-input" id="storyInput" placeholder="As a [user], I want to [action], so that [benefit].
+
+    <!-- STEP 1 -->
+    <div class="panel show" id="step1">
+      <div class="card">
+        <div class="card-title">📋 Step 1 — Paste your user story</div>
+        <textarea class="story-input" id="storyInput" placeholder="As a parent, I want to submit a rating for a supplier after my order is complete, so that other parents can make informed decisions.
 
 Acceptance Criteria:
-- AC 1
-- AC 2
-- AC 3" oninput="updateCharCount()"></textarea>
-    <div class="input-footer">
-      <span class="char-count" id="charCount">0 characters</span>
-      <button class="analyse-btn" id="analyseBtn" onclick="analyseStory()">
-        ⚡ Analyse with StoryIQ
-      </button>
-    </div>
-  </div>
-
-  <div class="loading-bar" id="loadingBar">
-    <div class="spinner"></div>
-    <div style="font-size:15px;font-weight:600;color:#1a1a2e;">Running 4-persona analysis…</div>
-    <div class="loading-steps" id="loadingStep">Sending to Claude AI…</div>
-  </div>
-
-  <div class="results" id="resultsArea">
-
-    <div class="score-banner">
-      <div class="score-circle" id="scoreCircle">
-        <span class="score-number" id="scoreNum">—</span>
-        <span class="score-denom">/100</span>
-      </div>
-      <div class="score-right">
-        <div class="score-verdict" id="scoreVerdict">—</div>
-        <div class="score-summary" id="scoreSummary"></div>
-        <div class="score-metrics" id="scoreMetrics"></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">
-        <h3>🎭 How each persona reads your story</h3>
-        <span style="font-size:11px;color:#999;">Red = conflict · Yellow = warning · Green = clear</span>
-      </div>
-      <div class="section-body">
-        <div class="personas-grid" id="personasGrid"></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-head">
-        <h3>🔍 Issues detected</h3>
-        <span class="badge badge-red" id="criticalCount"></span>
-      </div>
-      <div class="section-body">
-        <div class="issues-list" id="issuesList"></div>
-      </div>
-    </div>
-
-    <div class="section" id="rewriteSection">
-      <div class="section-head">
-        <h3>✨ Suggested rewrite — all conflicts resolved</h3>
-      </div>
-      <div class="section-body">
-        <div class="rewrite-box">
-          <div class="rewrite-text" id="rewriteText"></div>
-        </div>
-        <div class="rewrite-actions">
-          <button class="copy-btn" id="copyBtn" onclick="copyRewrite()">📋 Copy improved story</button>
-          <button class="copy-btn" onclick="useRewrite()">↑ Use as new input</button>
+- Parent can rate supplier after order is complete
+- Rating should be auto-approved based on admin config
+- Email sent to parent within 1 day of order completion"></textarea>
+        <div class="row">
+          <button class="small-btn" onclick="loadExample()">Load example</button>
+          <button class="primary-btn" onclick="goStep2()">Generate prompt →</button>
         </div>
       </div>
     </div>
 
+    <!-- STEP 2 -->
+    <div class="panel" id="step2">
+      <div class="card">
+        <div class="card-title">🤖 Step 2 — Copy this prompt and paste into Claude.ai</div>
+        <div class="prompt-box" id="promptBox"></div>
+        <button class="copy-prompt-btn" id="copyPromptBtn" onclick="copyPrompt()">📋 Copy entire prompt</button>
+        <a class="claude-link" href="https://claude.ai" target="_blank">🔗 Open Claude.ai in new tab →</a>
+        <div class="instruction-steps">
+          <strong>👆 Do these 3 things:</strong>
+          1. Click "Copy entire prompt" above<br>
+          2. Click "Open Claude.ai" — paste the prompt — press Enter<br>
+          3. Come back here and click Next Step →
+        </div>
+        <div class="row" style="margin-top:12px;">
+          <button class="small-btn" onclick="goStep(1)">← Back</button>
+          <button class="primary-btn" onclick="goStep(3)">I've got Claude's response →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="panel" id="step3">
+      <div class="card">
+        <div class="card-title">📥 Step 3 — Paste Claude's response here</div>
+        <textarea class="result-input" id="resultInput" placeholder="Paste Claude's full response here…"></textarea>
+        <div id="parseError" class="error-box" style="display:none;margin-top:10px;"></div>
+        <div class="row">
+          <button class="small-btn" onclick="goStep(2)">← Back</button>
+          <button class="primary-btn" onclick="parseAndDisplay()">Analyse response →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="panel" id="step4">
+
+      <div class="score-banner">
+        <div class="score-circle" id="scoreCircle">
+          <span class="score-number" id="scoreNum">—</span>
+          <span class="score-denom">/100</span>
+        </div>
+        <div class="score-right">
+          <div class="score-verdict" id="scoreVerdict">—</div>
+          <div class="score-summary" id="scoreSummary"></div>
+          <div class="metrics-row" id="metricsRow"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <h3>🎭 How each persona reads your story</h3>
+          <span style="font-size:11px;color:#999;">Red = conflict · Yellow = warning · Green = clear</span>
+        </div>
+        <div class="section-body">
+          <div class="personas-grid" id="personasGrid"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <h3>🔍 Issues detected</h3>
+          <span id="critBadge" style="font-size:11px;padding:2px 8px;border-radius:10px;background:#fef2f2;color:#b91c1c;font-weight:600;display:none;"></span>
+        </div>
+        <div class="section-body">
+          <div class="issues-list" id="issuesList"></div>
+        </div>
+      </div>
+
+      <div class="section" id="rewriteSection">
+        <div class="section-head">
+          <h3>✨ Improved story — all conflicts resolved</h3>
+        </div>
+        <div class="section-body">
+          <div class="rewrite-box">
+            <div class="rewrite-text" id="rewriteText"></div>
+          </div>
+          <div class="action-row">
+            <button class="out-btn" id="copyRewriteBtn" onclick="copyRewrite()">📋 Copy improved story</button>
+            <button class="out-btn" onclick="useRewrite()">↑ Re-analyse improved story</button>
+            <button class="out-btn" onclick="goStep(1)">⚡ Analyse new story</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="section history-section" id="historySection">
-    <div class="section-head">
-      <h3>🕐 Analysis history</h3>
-      <span class="clear-history" onclick="clearHistory()">Clear all</span>
+  <!-- HISTORY TAB -->
+  <div class="panel" id="tab-history">
+    <div class="section">
+      <div class="section-head">
+        <h3>🕐 Analysis history</h3>
+        <button class="small-btn" onclick="clearHistory()" style="color:#ef4444;border-color:#fecaca;">Clear all</button>
+      </div>
+      <div id="historyList"><div class="empty-state">No analyses yet. Go to Analyser tab to run your first story.</div></div>
     </div>
-    <div id="historyList"><div class="empty-history">No analyses yet — run your first story above.</div></div>
+  </div>
+
+  <!-- TRENDS TAB -->
+  <div class="panel" id="tab-trends">
+    <div class="trend-grid" id="trendGrid"></div>
+    <div class="section">
+      <div class="section-head"><h3>📈 Score over time</h3></div>
+      <div class="section-body" id="trendChart"></div>
+    </div>
+  </div>
+
+  <!-- HELP TAB -->
+  <div class="panel" id="tab-help">
+    <div class="card">
+      <div class="card-title">⚡ What is StoryIQ?</div>
+      <p style="font-size:13px;color:#555;line-height:1.9;margin-bottom:16px;">
+        StoryIQ is a zero-cost BA story quality engine. It uses your existing Claude.ai subscription to analyse user stories from 4 different perspectives simultaneously — Developer, QA Engineer, End User, and Client — and detects where they conflict before grooming starts.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+        <div style="background:#f0f0ff;border-radius:10px;padding:14px;">
+          <div style="font-size:20px;margin-bottom:6px;">🧑‍💻</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Developer view</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;">How the dev will interpret the story and what assumptions they'll make</div>
+        </div>
+        <div style="background:#fff7ed;border-radius:10px;padding:14px;">
+          <div style="font-size:20px;margin-bottom:6px;">🧪</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">QA Engineer view</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;">What test cases QA will write and what edge cases they'll miss</div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:10px;padding:14px;">
+          <div style="font-size:20px;margin-bottom:6px;">👤</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">End User view</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;">How the actual user will experience this feature and where they'll get confused</div>
+        </div>
+        <div style="background:#fffbeb;border-radius:10px;padding:14px;">
+          <div style="font-size:20px;margin-bottom:6px;">💼</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Client view</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;">What the client expects vs what's actually being built</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">📋 How to use — 4 steps</div>
+      <div style="font-size:13px;color:#555;line-height:2.2;">
+        <strong style="color:#6366f1;">Step 1</strong> — Paste your user story into the Analyser tab<br>
+        <strong style="color:#6366f1;">Step 2</strong> — Click "Generate prompt" — StoryIQ builds the perfect Claude prompt automatically<br>
+        <strong style="color:#6366f1;">Step 3</strong> — Copy the prompt → paste into Claude.ai → copy Claude's response<br>
+        <strong style="color:#6366f1;">Step 4</strong> — Paste the response back → StoryIQ displays your full analysis beautifully<br><br>
+        <strong>Cost: £0. Uses your existing Claude.ai subscription.</strong>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">💡 Pro tips</div>
+      <div style="font-size:13px;color:#555;line-height:2.2;">
+        • Run every story through StoryIQ before grooming — save 30 mins per story<br>
+        • Check the Trends tab weekly — track your quality score improvement<br>
+        • Share the improved story directly from Step 4 — it's already rewritten<br>
+        • Your history is saved in your browser — all previous analyses available anytime<br>
+        • Share this URL with your team — each person uses their own Claude.ai account
+      </div>
+    </div>
   </div>
 
 </div>
 
 <script>
-const S = {
-  get: k => { try { return JSON.parse(localStorage.getItem(k)) } catch { return null } },
-  set: (k,v) => localStorage.setItem(k, JSON.stringify(v)),
-  del: k => localStorage.removeItem(k)
-};
+const S={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),del:k=>localStorage.removeItem(k)};
+let history=S.get('siq2_history')||[];
+let currentStep=1;
 
-let history = S.get('siq_history') || [];
-let currentResult = null;
-
-function saveApiKey() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key) { alert('Please paste your API key'); return; }
-  if (!key.startsWith('sk-ant-')) { alert('That doesn\'t look like a valid Claude API key. It should start with sk-ant-'); return; }
-  S.set('siq_key', key);
-  document.getElementById('apiStatus').textContent = 'Connected ✓';
-  document.getElementById('apiStatus').className = 'api-status connected';
-  document.getElementById('setupBanner').classList.add('hidden');
+function showTab(tab){
+  document.querySelectorAll('.panel[id^="tab-"]').forEach(p=>p.classList.remove('show'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('show');
+  event.target.classList.add('active');
+  if(tab==='history') renderHistory();
+  if(tab==='trends') renderTrends();
 }
 
-function loadExample() {
-  document.getElementById('storyInput').value = `As a parent, I want to submit a supplier rating after my order is complete, so that other parents can make informed purchasing decisions.
+function goStep(n){
+  for(let i=1;i<=4;i++){
+    document.getElementById('step'+i).classList.remove('show');
+    document.getElementById('step'+i+'-bar').classList.remove('active','done');
+  }
+  for(let i=1;i<n;i++) document.getElementById('step'+i+'-bar').classList.add('done');
+  document.getElementById('step'+n).classList.add('show');
+  document.getElementById('step'+n+'-bar').classList.add('active');
+  currentStep=n;
+}
+
+function loadExample(){
+  document.getElementById('storyInput').value=`As a parent, I want to submit a supplier rating after my order is complete, so that other parents can make informed purchasing decisions.
 
 Acceptance Criteria:
-- Parent can submit a star rating (1-5) and optional text review after order is marked complete
+- Parent can submit a star rating (1-5) and optional text review
 - Rating should be automatically approved based on admin configuration
 - System sends confirmation email to parent within 1 day of order completion
-- Rating is visible on supplier profile page`;
-  updateCharCount();
+- Rating is visible on the supplier profile page
+- Only one rating allowed per order`;
 }
 
-function updateCharCount() {
-  const len = document.getElementById('storyInput').value.length;
-  document.getElementById('charCount').textContent = len + ' characters';
+function goStep2(){
+  const story=document.getElementById('storyInput').value.trim();
+  if(!story){alert('Please paste a user story first');return;}
+  const prompt=buildPrompt(story);
+  document.getElementById('promptBox').textContent=prompt;
+  goStep(2);
 }
 
-const loadingMessages = [
-  'Sending to Claude AI…',
-  'Analysing developer perspective…',
-  'Analysing QA engineer perspective…',
-  'Analysing end user perspective…',
-  'Detecting conflicts between personas…',
-  'Generating quality score…',
-  'Writing improved story…'
-];
+function buildPrompt(story){
+  return `You are StoryIQ, a senior BA quality analysis engine. Analyse the following user story and return your response in this EXACT format with these EXACT section headers. Do not deviate from the format.
 
-async function analyseStory() {
-  const story = document.getElementById('storyInput').value.trim();
-  if (!story) { alert('Please paste a user story first'); return; }
-
-  const key = S.get('siq_key');
-  if (!key) { alert('Please connect your Claude API key first (top right)'); return; }
-
-  document.getElementById('loadingBar').classList.add('show');
-  document.getElementById('resultsArea').classList.remove('show');
-  document.getElementById('analyseBtn').disabled = true;
-
-  let step = 0;
-  const stepInterval = setInterval(() => {
-    step = (step + 1) % loadingMessages.length;
-    document.getElementById('loadingStep').textContent = loadingMessages[step];
-  }, 1200);
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1500,
-        messages: [{
-          role: 'user',
-          content: `You are StoryIQ, a senior BA quality analysis engine. Analyse this user story and return ONLY valid JSON with no markdown, no explanation, no code fences.
-
-USER STORY:
+USER STORY TO ANALYSE:
 ${story}
 
-Return this exact JSON:
-{
-  "score": <integer 0-100>,
-  "verdict": "<one of: Not grooming ready | Needs work | Grooming ready>",
-  "summary": "<one sentence overall quality assessment>",
-  "metrics": [
-    {"label": "Completeness", "rating": "<low|medium|high>"},
-    {"label": "Clarity", "rating": "<low|medium|high>"},
-    {"label": "Testability", "rating": "<low|medium|high>"},
-    {"label": "Business value", "rating": "<low|medium|high>"}
-  ],
-  "personas": [
-    {
-      "name": "Developer",
-      "emoji": "🧑‍💻",
-      "reads": "<how a developer interprets this story in one clear sentence>",
-      "assumption": "<the biggest assumption the developer will make>",
-      "conflict": "<specific conflict or gap they will encounter, or null if none>",
-      "status": "<conflict|warning|clear>"
-    },
-    {
-      "name": "QA Engineer",
-      "emoji": "🧪",
-      "reads": "<how QA reads this story>",
-      "assumption": "<what QA assumes about edge cases>",
-      "conflict": "<missing test scenario or ambiguity, or null>",
-      "status": "<conflict|warning|clear>"
-    },
-    {
-      "name": "End User",
-      "emoji": "👤",
-      "reads": "<how the end user would experience this feature>",
-      "assumption": "<what the user expects that may not be stated>",
-      "conflict": "<confusion point for the user, or null>",
-      "status": "<conflict|warning|clear>"
-    },
-    {
-      "name": "Client",
-      "emoji": "💼",
-      "reads": "<how the client / product owner reads this>",
-      "assumption": "<business assumption the client is making>",
-      "conflict": "<expectation mismatch or scope concern, or null>",
-      "status": "<conflict|warning|clear>"
-    }
-  ],
-  "issues": [
-    {
-      "type": "<critical|warning|pass>",
-      "category": "<Vague language|Missing AC|Undefined role|No failure flow|Assumption|Scope risk|Good practice>",
-      "text": "<specific issue description referencing actual words from the story>",
-      "suggestion": "<one sentence fix>"
-    }
-  ],
-  "rewrite": "<complete rewritten user story with all conflicts resolved, written in proper format with clear ACs>"
-}`
-        }]
-      })
-    });
+Return your analysis using EXACTLY these headers and format:
 
-    clearInterval(stepInterval);
+SCORE: [number 0-100]
+VERDICT: [one of: Not grooming ready | Needs work | Grooming ready]
+SUMMARY: [one sentence overall assessment]
 
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || `API error ${res.status}`);
-    }
+METRICS:
+- Completeness: [low/medium/high]
+- Clarity: [low/medium/high]
+- Testability: [low/medium/high]
+- Business value: [low/medium/high]
 
-    const data = await res.json();
-    const raw  = data.content[0].text.replace(/```json|```/g,'').trim();
-    const result = JSON.parse(raw);
+DEVELOPER PERSPECTIVE:
+Reads as: [how developer interprets this in one sentence]
+Assumes: [biggest assumption developer will make]
+Conflict: [specific issue they will hit, or NONE]
+Status: [conflict/warning/clear]
 
-    currentResult = result;
-    saveToHistory(story, result);
-    renderResults(result);
+QA ENGINEER PERSPECTIVE:
+Reads as: [how QA reads this]
+Assumes: [what QA assumes about edge cases]
+Conflict: [missing test scenario or ambiguity, or NONE]
+Status: [conflict/warning/clear]
 
-  } catch(e) {
-    clearInterval(stepInterval);
-    document.getElementById('loadingBar').classList.remove('show');
-    document.getElementById('analyseBtn').disabled = false;
-    alert('Analysis failed: ' + e.message + '\n\nCheck your API key is correct and has credits.');
-  }
+END USER PERSPECTIVE:
+Reads as: [how end user experiences this]
+Assumes: [what user expects that is not stated]
+Conflict: [confusion point for user, or NONE]
+Status: [conflict/warning/clear]
+
+CLIENT PERSPECTIVE:
+Reads as: [how client/product owner reads this]
+Assumes: [business assumption client is making]
+Conflict: [expectation mismatch, or NONE]
+Status: [conflict/warning/clear]
+
+ISSUES:
+- [critical/warning/pass] | [category] | [specific issue text] | Fix: [one sentence fix]
+- [critical/warning/pass] | [category] | [specific issue text] | Fix: [one sentence fix]
+- [critical/warning/pass] | [category] | [specific issue text] | Fix: [one sentence fix]
+
+IMPROVED STORY:
+[Complete rewritten user story with all issues resolved, proper format with clear ACs]`;
 }
 
-function renderResults(r) {
-  document.getElementById('loadingBar').classList.remove('show');
-  document.getElementById('analyseBtn').disabled = false;
-  document.getElementById('resultsArea').classList.add('show');
-
-  const score = r.score;
-  const cls = score >= 75 ? 'green' : score >= 50 ? 'amber' : 'red';
-
-  document.getElementById('scoreCircle').className = 'score-circle ' + cls;
-  document.getElementById('scoreNum').className = 'score-number ' + cls;
-  document.getElementById('scoreNum').textContent = score;
-  document.getElementById('scoreVerdict').textContent = r.verdict;
-  document.getElementById('scoreSummary').textContent = r.summary;
-
-  const mColors = { low:'badge-red', medium:'badge-amber', high:'badge-green' };
-  document.getElementById('scoreMetrics').innerHTML = (r.metrics || []).map(m =>
-    `<span class="metric-pill mp-${m.rating === 'high' ? 'green' : m.rating === 'medium' ? 'amber' : 'red'}">${m.label}: ${m.rating}</span>`
-  ).join('');
-
-  const cardClass = { conflict:'has-conflict', warning:'has-warning', clear:'clear' };
-  const conflictClass = { conflict:'pc-red', warning:'pc-yellow', clear:'pc-green' };
-  const conflictIcon = { conflict:'⚠️ ', warning:'💡 ', clear:'✅ ' };
-
-  document.getElementById('personasGrid').innerHTML = r.personas.map(p => `
-    <div class="persona-card ${cardClass[p.status] || 'clear'}">
-      <div class="persona-top">
-        <span class="persona-emoji">${p.emoji}</span>
-        <div>
-          <div class="persona-name">${p.name}</div>
-          <div class="persona-role">reads this as…</div>
-        </div>
-      </div>
-      <div class="persona-reads">${p.reads}</div>
-      ${p.assumption ? `<div style="font-size:11px;color:#888;margin-bottom:7px;font-style:italic;">Assumes: ${p.assumption}</div>` : ''}
-      <div class="persona-conflict ${conflictClass[p.status] || 'pc-green'}">
-        ${conflictIcon[p.status] || '✅ '}${p.conflict || 'No conflicts detected'}
-      </div>
-    </div>`).join('');
-
-  const criticals = (r.issues || []).filter(i => i.type === 'critical').length;
-  document.getElementById('criticalCount').textContent = criticals > 0 ? `${criticals} critical` : '';
-  document.getElementById('criticalCount').style.display = criticals > 0 ? '' : 'none';
-
-  const typeMap = { critical:'ir-critical', warning:'ir-warning', pass:'ir-pass' };
-  const iconMap = { critical:'🔴', warning:'🟡', pass:'✅' };
-  const labelMap = { critical:'Critical', warning:'Warning', pass:'Good practice' };
-  const labelCls = { critical:'it-critical', warning:'it-warning', pass:'it-pass' };
-
-  document.getElementById('issuesList').innerHTML = (r.issues || []).map(i => `
-    <div class="issue-row ${typeMap[i.type] || 'ir-warning'}">
-      <span class="issue-icon">${iconMap[i.type] || '🟡'}</span>
-      <div class="issue-content">
-        <div class="issue-type ${labelCls[i.type] || 'it-warning'}">${labelMap[i.type] || 'Warning'} · ${i.category || ''}</div>
-        <div class="issue-text">${i.text}</div>
-        ${i.suggestion ? `<div class="issue-fix">💡 Fix: ${i.suggestion}</div>` : ''}
-      </div>
-    </div>`).join('');
-
-  if (r.rewrite) {
-    document.getElementById('rewriteText').textContent = r.rewrite;
-    document.getElementById('rewriteSection').style.display = '';
-  } else {
-    document.getElementById('rewriteSection').style.display = 'none';
-  }
-
-  document.getElementById('resultsArea').scrollIntoView({ behavior:'smooth', block:'start' });
-}
-
-function copyRewrite() {
-  const text = document.getElementById('rewriteText').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = '✅ Copied!';
+function copyPrompt(){
+  const txt=document.getElementById('promptBox').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.getElementById('copyPromptBtn');
+    btn.textContent='✅ Copied! Now paste into Claude.ai';
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '📋 Copy improved story'; btn.classList.remove('copied'); }, 2500);
+    setTimeout(()=>{btn.textContent='📋 Copy entire prompt';btn.classList.remove('copied');},3000);
   });
 }
 
-function useRewrite() {
-  const text = document.getElementById('rewriteText').textContent;
-  document.getElementById('storyInput').value = text;
-  updateCharCount();
-  document.getElementById('storyInput').scrollIntoView({ behavior:'smooth' });
+function parseAndDisplay(){
+  const raw=document.getElementById('resultInput').value.trim();
+  if(!raw){alert('Please paste Claude\'s response first');return;}
+  document.getElementById('parseError').style.display='none';
+
+  try{
+    const r=parseResponse(raw);
+    renderAnalysis(r);
+    saveToHistory(document.getElementById('storyInput').value.trim(), r);
+    goStep(4);
+  }catch(e){
+    document.getElementById('parseError').style.display='block';
+    document.getElementById('parseError').textContent='Could not parse Claude\'s response. Make sure you copied the full response. Error: '+e.message;
+  }
 }
 
-function saveToHistory(story, result) {
-  const entry = {
-    id: Date.now().toString(),
-    date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }),
-    title: story.split('\n')[0].substring(0, 80),
-    score: result.score,
-    verdict: result.verdict,
-    story,
-    result
+function parseResponse(text){
+  const get=(key,def='')=>{
+    const rx=new RegExp(key+':\\s*(.+)','i');
+    const m=text.match(rx);
+    return m?m[1].trim():def;
+  };
+
+  const score=parseInt(get('SCORE','50'))||50;
+  const verdict=get('VERDICT','Needs work');
+  const summary=get('SUMMARY','Analysis complete.');
+
+  const metrics=[];
+  const metricLines=text.match(/- (Completeness|Clarity|Testability|Business value):\s*(\w+)/gi)||[];
+  metricLines.forEach(l=>{
+    const m=l.match(/- (.+?):\s*(\w+)/i);
+    if(m) metrics.push({label:m[1].trim(),rating:m[2].trim().toLowerCase()});
+  });
+
+  const personaNames=[
+    {key:'DEVELOPER PERSPECTIVE',name:'Developer',emoji:'🧑‍💻'},
+    {key:'QA ENGINEER PERSPECTIVE',name:'QA Engineer',emoji:'🧪'},
+    {key:'END USER PERSPECTIVE',name:'End User',emoji:'👤'},
+    {key:'CLIENT PERSPECTIVE',name:'Client',emoji:'💼'}
+  ];
+
+  const personas=personaNames.map(p=>{
+    const section=extractSection(text,p.key);
+    return{
+      name:p.name,
+      emoji:p.emoji,
+      reads:extractField(section,'Reads as'),
+      assumes:extractField(section,'Assumes'),
+      conflict:extractField(section,'Conflict'),
+      status:extractField(section,'Status').toLowerCase()||'clear'
+    };
+  });
+
+  const issues=[];
+  const issueLines=text.match(/^- (critical|warning|pass)\s*\|.+/gim)||[];
+  issueLines.forEach(l=>{
+    const parts=l.replace(/^- /,'').split('|').map(x=>x.trim());
+    if(parts.length>=3){
+      const fixMatch=parts[2]?.match(/Fix:\s*(.+)/i);
+      issues.push({
+        type:parts[0].toLowerCase(),
+        category:parts[1]||'General',
+        text:parts[2]?.replace(/Fix:.*/i,'').trim()||parts[2],
+        fix:fixMatch?fixMatch[1]:parts[3]||''
+      });
+    }
+  });
+
+  const rewriteMatch=text.match(/IMPROVED STORY:\s*([\s\S]+?)(?:\n\n\n|$)/i);
+  const rewrite=rewriteMatch?rewriteMatch[1].trim():'';
+
+  return{score,verdict,summary,metrics,personas,issues,rewrite};
+}
+
+function extractSection(text,heading){
+  const rx=new RegExp(heading+':\\s*\\n([\\s\\S]*?)(?=\\n[A-Z\\s]+PERSPECTIVE:|ISSUES:|IMPROVED STORY:|$)','i');
+  const m=text.match(rx);
+  return m?m[1]:'';
+}
+
+function extractField(section,field){
+  const rx=new RegExp(field+':\\s*(.+)','i');
+  const m=section.match(rx);
+  return m?m[1].trim():'';
+}
+
+function renderAnalysis(r){
+  const cls=r.score>=75?'green':r.score>=50?'amber':'red';
+  document.getElementById('scoreCircle').className='score-circle '+cls;
+  document.getElementById('scoreNum').className='score-number '+cls;
+  document.getElementById('scoreNum').textContent=r.score;
+  document.getElementById('scoreVerdict').textContent=r.verdict;
+  document.getElementById('scoreSummary').textContent=r.summary;
+
+  document.getElementById('metricsRow').innerHTML=(r.metrics||[]).map(m=>
+    `<span class="metric-pill mp-${m.rating==='high'?'green':m.rating==='medium'?'amber':'red'}">${m.label}: ${m.rating}</span>`
+  ).join('');
+
+  const cardCls={conflict:'conflict',warning:'warning',clear:'clear'};
+  const pCls={conflict:'pc-red',warning:'pc-yellow',clear:'pc-green'};
+  const pIcon={conflict:'⚠️ ',warning:'💡 ',clear:'✅ '};
+
+  document.getElementById('personasGrid').innerHTML=r.personas.map(p=>`
+    <div class="persona-card ${cardCls[p.status]||'clear'}">
+      <div class="persona-top">
+        <span class="p-emoji">${p.emoji}</span>
+        <div><div class="p-name">${p.name}</div><div class="p-role">reads this as…</div></div>
+      </div>
+      <div class="p-reads">${p.reads||'—'}</div>
+      ${p.assumes?`<div style="font-size:11px;color:#888;margin-bottom:6px;font-style:italic;">Assumes: ${p.assumes}</div>`:''}
+      <div class="p-conflict ${pCls[p.status]||'pc-green'}">
+        ${pIcon[p.status]||'✅ '}${(p.conflict&&p.conflict.toUpperCase()!=='NONE')?p.conflict:'No conflicts detected'}
+      </div>
+    </div>`).join('');
+
+  const crits=(r.issues||[]).filter(i=>i.type==='critical').length;
+  const cb=document.getElementById('critBadge');
+  if(crits>0){cb.textContent=crits+' critical';cb.style.display='';}else{cb.style.display='none';}
+
+  const tMap={critical:'ir-c',warning:'ir-w',pass:'ir-p'};
+  const iMap={critical:'🔴',warning:'🟡',pass:'✅'};
+  const lMap={critical:'Critical',warning:'Warning',pass:'Good practice'};
+  const lcMap={critical:'it-c',warning:'it-w',pass:'it-p'};
+
+  document.getElementById('issuesList').innerHTML=(r.issues||[]).map(i=>`
+    <div class="issue-row ${tMap[i.type]||'ir-w'}">
+      <span class="i-icon">${iMap[i.type]||'🟡'}</span>
+      <div class="i-body">
+        <div class="i-type ${lcMap[i.type]||'it-w'}">${lMap[i.type]||'Warning'} · ${i.category||''}</div>
+        <div class="i-text">${i.text||''}</div>
+        ${i.fix?`<div class="i-fix">💡 Fix: ${i.fix}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  if(r.rewrite){
+    document.getElementById('rewriteText').textContent=r.rewrite;
+    document.getElementById('rewriteSection').style.display='';
+  }else{
+    document.getElementById('rewriteSection').style.display='none';
+  }
+}
+
+function copyRewrite(){
+  const txt=document.getElementById('rewriteText').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.getElementById('copyRewriteBtn');
+    b.textContent='✅ Copied!';b.classList.add('copied');
+    setTimeout(()=>{b.textContent='📋 Copy improved story';b.classList.remove('copied');},2500);
+  });
+}
+
+function useRewrite(){
+  const txt=document.getElementById('rewriteText').textContent;
+  document.getElementById('storyInput').value=txt;
+  goStep(1);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function saveToHistory(story,result){
+  const entry={
+    id:Date.now().toString(),
+    date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+    title:story.split('\n')[0].substring(0,80),
+    score:result.score,
+    verdict:result.verdict,
+    story,result
   };
   history.unshift(entry);
-  if (history.length > 20) history = history.slice(0, 20);
-  S.set('siq_history', history);
-  renderHistory();
+  if(history.length>30) history=history.slice(0,30);
+  S.set('siq2_history',history);
 }
 
-function renderHistory() {
-  const list = document.getElementById('historyList');
-  if (!history.length) {
-    list.innerHTML = '<div class="empty-history">No analyses yet — run your first story above.</div>';
-    return;
-  }
-  const scoreClass = s => s >= 75 ? 'hs-green' : s >= 50 ? 'hs-amber' : 'hs-red';
-  const verdictClass = s => s >= 75 ? 'hv-green' : s >= 50 ? 'hv-amber' : 'hv-red';
-
-  list.innerHTML = history.map(h => `
-    <div class="history-item" onclick="loadHistoryItem('${h.id}')">
-      <div class="h-score ${scoreClass(h.score)}">${h.score}</div>
+function renderHistory(){
+  const list=document.getElementById('historyList');
+  if(!history.length){list.innerHTML='<div class="empty-state">No analyses yet.</div>';return;}
+  const sc=s=>s>=75?'hs-g':s>=50?'hs-a':'hs-r';
+  const vc=s=>s>=75?'hv-g':s>=50?'hv-a':'hv-r';
+  list.innerHTML=history.map(h=>`
+    <div class="history-item" onclick="loadHistory('${h.id}')">
+      <div class="h-score ${sc(h.score)}">${h.score}</div>
       <div class="h-meta">
         <div class="h-title">${h.title}</div>
         <div class="h-date">${h.date}</div>
       </div>
-      <span class="h-verdict ${verdictClass(h.score)}">${h.verdict}</span>
+      <span class="h-verdict ${vc(h.score)}">${h.verdict}</span>
     </div>`).join('');
 }
 
-function loadHistoryItem(id) {
-  const item = history.find(h => h.id === id);
-  if (!item) return;
-  document.getElementById('storyInput').value = item.story;
-  updateCharCount();
-  currentResult = item.result;
-  renderResults(item.result);
-  window.scrollTo({ top: 0, behavior:'smooth' });
+function loadHistory(id){
+  const item=history.find(h=>h.id===id);
+  if(!item) return;
+  document.getElementById('storyInput').value=item.story;
+  renderAnalysis(item.result);
+  showTab('analyser');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  goStep(4);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function clearHistory() {
-  if (!confirm('Clear all analysis history?')) return;
-  history = [];
-  S.del('siq_history');
-  renderHistory();
+function clearHistory(){
+  if(!confirm('Clear all history?')) return;
+  history=[];S.del('siq2_history');renderHistory();
 }
 
-// Init
-const savedKey = S.get('siq_key');
-if (savedKey) {
-  document.getElementById('apiKeyInput').value = savedKey;
-  document.getElementById('apiStatus').textContent = 'Connected ✓';
-  document.getElementById('apiStatus').className = 'api-status connected';
-  document.getElementById('setupBanner').classList.add('hidden');
+function renderTrends(){
+  const tg=document.getElementById('trendGrid');
+  if(!history.length){
+    tg.innerHTML='<div class="empty-state" style="grid-column:1/-1">No data yet — run some analyses first.</div>';
+    document.getElementById('trendChart').innerHTML='';
+    return;
+  }
+  const avg=Math.round(history.reduce((a,h)=>a+h.score,0)/history.length);
+  const best=Math.max(...history.map(h=>h.score));
+  const ready=history.filter(h=>h.score>=75).length;
+  const trend=history.length>=2?history[0].score-history[history.length-1].score:0;
+
+  tg.innerHTML=`
+    <div class="trend-card"><div class="trend-label">Analyses run</div><div class="trend-value tv-blue">${history.length}</div></div>
+    <div class="trend-card"><div class="trend-label">Average score</div><div class="trend-value tv-amber">${avg}</div></div>
+    <div class="trend-card"><div class="trend-label">Best score</div><div class="trend-value tv-green">${best}</div></div>
+    <div class="trend-card"><div class="trend-label">Grooming ready</div><div class="trend-value tv-green">${ready}</div></div>
+    <div class="trend-card"><div class="trend-label">Score trend</div><div class="trend-value ${trend>=0?'tv-green':'tv-red'}">${trend>=0?'+':''}${trend}</div></div>
+  `;
+
+  const max=100;
+  const bars=history.slice(0,15).reverse().map(h=>{
+    const pct=Math.round((h.score/max)*100);
+    const col=h.score>=75?'#10b981':h.score>=50?'#f59e0b':'#ef4444';
+    return`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:0;">
+      <div style="font-size:10px;color:#999;font-weight:600;">${h.score}</div>
+      <div style="width:100%;max-width:32px;height:${Math.max(pct*1.4,8)}px;background:${col};border-radius:4px 4px 0 0;"></div>
+      <div style="font-size:9px;color:#bbb;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;max-width:40px;">${h.date.split(',')[0]}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('trendChart').innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:6px;height:180px;padding:0 4px;">
+      ${bars}
+    </div>
+    <div style="font-size:11px;color:#bbb;margin-top:8px;text-align:center;">Last ${Math.min(history.length,15)} analyses — most recent on right</div>`;
 }
-updateCharCount();
-renderHistory();
 </script>
 </body>
 </html>
