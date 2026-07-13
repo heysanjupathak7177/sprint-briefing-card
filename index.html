@@ -222,11 +222,6 @@ body{font-family:'Aptos','Nunito Sans','Segoe UI',sans-serif;background:#f4f4f4;
   </div>
 </div>
 
-<div style="background:#fff;border-bottom:1px solid #e5e7eb;padding:9px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-  <span style="font-size:11px;font-weight:700;color:#e3000f;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;">💡 Pro tip:</span>
-  <span style="font-size:11px;color:#666;line-height:1.5;">Click "Credentials" once to set up your Jira + AI API keys, then use Automatic Mode below to fetch a ticket, analyse it, and push the result back — zero copy-paste.</span>
-</div>
-
 <div class="main">
 
   <!-- ANALYSER TAB -->
@@ -475,7 +470,7 @@ Acceptance Criteria:
         <input class="field-input" id="credGeminiKey" type="password" placeholder="AIza...">
         <div class="field-hint">Free — get one at aistudio.google.com/apikey</div>
         <label class="field-label" style="margin-top:10px;">Gemini model</label>
-        <input class="field-input" id="credGeminiModel" placeholder="gemini-2.5-flash">
+        <input class="field-input" id="credGeminiModel" placeholder="gemini-flash-latest">
       </div>
 
       <div class="section-divider">CORS Proxy (only needed for Jira)</div>
@@ -519,7 +514,7 @@ function openCredsModal(){
   document.getElementById('credGrokKey').value=c.grokKey||'';
   document.getElementById('credGrokModel').value=c.grokModel||'grok-4';
   document.getElementById('credGeminiKey').value=c.geminiKey||'';
-  document.getElementById('credGeminiModel').value=c.geminiModel||'gemini-2.5-flash';
+  document.getElementById('credGeminiModel').value=c.geminiModel||'gemini-flash-latest';
   document.getElementById('credProxyUrl').value=c.proxyUrl||'';
   document.getElementById('credProxySecret').value=c.proxySecret||'';
   setProvider(c.provider||'claude');
@@ -549,7 +544,7 @@ function saveCredsAndClose(){
     grokKey:document.getElementById('credGrokKey').value.trim(),
     grokModel:document.getElementById('credGrokModel').value.trim()||'grok-4',
     geminiKey:document.getElementById('credGeminiKey').value.trim(),
-    geminiModel:document.getElementById('credGeminiModel').value.trim()||'gemini-2.5-flash',
+    geminiModel:document.getElementById('credGeminiModel').value.trim()||'gemini-flash-latest',
     proxyUrl:document.getElementById('credProxyUrl').value.trim().replace(/\/$/,''),
     proxySecret:document.getElementById('credProxySecret').value.trim()
   };
@@ -674,7 +669,7 @@ async function callGrok(prompt,creds){
 }
 
 async function callGemini(prompt,creds){
-  const model=creds.geminiModel||'gemini-2.5-flash';
+  const model=creds.geminiModel||'gemini-flash-latest';
   const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${creds.geminiKey}`;
   const resp=await fetch(url,{
     method:'POST',
