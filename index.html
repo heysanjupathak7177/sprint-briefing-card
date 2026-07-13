@@ -456,6 +456,7 @@ Acceptance Criteria:
       <div class="provider-toggle">
         <div class="provider-opt" id="provOptClaude" onclick="setProvider('claude')">Claude</div>
         <div class="provider-opt" id="provOptGrok" onclick="setProvider('grok')">Grok (xAI)</div>
+        <div class="provider-opt" id="provOptGemini" onclick="setProvider('gemini')">Gemini (free)</div>
       </div>
       <div class="field-group" id="claudeFields">
         <label class="field-label">Claude API key</label>
@@ -468,6 +469,13 @@ Acceptance Criteria:
         <input class="field-input" id="credGrokKey" type="password" placeholder="xai-...">
         <label class="field-label" style="margin-top:10px;">Grok model</label>
         <input class="field-input" id="credGrokModel" placeholder="grok-4">
+      </div>
+      <div class="field-group" id="geminiFields" style="display:none;">
+        <label class="field-label">Gemini API key</label>
+        <input class="field-input" id="credGeminiKey" type="password" placeholder="AIza...">
+        <div class="field-hint">Free — get one at aistudio.google.com/apikey</div>
+        <label class="field-label" style="margin-top:10px;">Gemini model</label>
+        <input class="field-input" id="credGeminiModel" placeholder="gemini-2.5-flash">
       </div>
 
       <div class="section-divider">CORS Proxy (only needed for Jira)</div>
@@ -510,6 +518,8 @@ function openCredsModal(){
   document.getElementById('credClaudeModel').value=c.claudeModel||'claude-sonnet-5';
   document.getElementById('credGrokKey').value=c.grokKey||'';
   document.getElementById('credGrokModel').value=c.grokModel||'grok-4';
+  document.getElementById('credGeminiKey').value=c.geminiKey||'';
+  document.getElementById('credGeminiModel').value=c.geminiModel||'gemini-2.5-flash';
   document.getElementById('credProxyUrl').value=c.proxyUrl||'';
   document.getElementById('credProxySecret').value=c.proxySecret||'';
   setProvider(c.provider||'claude');
@@ -522,8 +532,10 @@ function setProvider(p){
   selectedProvider=p;
   document.getElementById('provOptClaude').classList.toggle('active',p==='claude');
   document.getElementById('provOptGrok').classList.toggle('active',p==='grok');
+  document.getElementById('provOptGemini').classList.toggle('active',p==='gemini');
   document.getElementById('claudeFields').style.display=p==='claude'?'':'none';
   document.getElementById('grokFields').style.display=p==='grok'?'':'none';
+  document.getElementById('geminiFields').style.display=p==='gemini'?'':'none';
 }
 
 function saveCredsAndClose(){
@@ -536,6 +548,8 @@ function saveCredsAndClose(){
     claudeModel:document.getElementById('credClaudeModel').value.trim()||'claude-sonnet-5',
     grokKey:document.getElementById('credGrokKey').value.trim(),
     grokModel:document.getElementById('credGrokModel').value.trim()||'grok-4',
+    geminiKey:document.getElementById('credGeminiKey').value.trim(),
+    geminiModel:document.getElementById('credGeminiModel').value.trim()||'gemini-2.5-flash',
     proxyUrl:document.getElementById('credProxyUrl').value.trim().replace(/\/$/,''),
     proxySecret:document.getElementById('credProxySecret').value.trim()
   };
@@ -553,7 +567,7 @@ function clearCreds(){
 
 function updateCredsBtnState(){
   const c=getCreds();
-  const ok=c.jiraSite&&c.jiraEmail&&c.jiraToken&&((c.provider==='grok')?c.grokKey:c.claudeKey);
+  const ok=c.jiraSite&&c.jiraEmail&&c.jiraToken&&((c.provider==='grok')?c.grokKey:(c.provider==='gemini')?c.geminiKey:c.claudeKey);
   document.getElementById('credsBtn').classList.toggle('set',!!ok);
   document.getElementById('credsBtn').textContent=ok?'🔑 Credentials ✓':'🔑 Credentials';
 }
@@ -659,8 +673,22 @@ async function callGrok(prompt,creds){
   return data.choices?.[0]?.message?.content||'';
 }
 
+async function callGemini(prompt,creds){
+  const model=creds.geminiModel||'gemini-2.5-flash';
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${creds.geminiKey}`;
+  const resp=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+  });
+  if(!resp.ok) throw new Error('Gemini API error '+resp.status+': '+(await resp.text()));
+  const data=await resp.json();
+  return data.candidates?.[0]?.content?.parts?.map(p=>p.text).join('\n')||'';
+}
+
 async function callLLM(prompt,creds){
   if(creds.provider==='grok') return callGrok(prompt,creds);
+  if(creds.provider==='gemini') return callGemini(prompt,creds);
   return callClaude(prompt,creds);
 }
 
@@ -684,7 +712,7 @@ async function runAutomatic(){
   const key=document.getElementById('ticketKeyInput').value.trim().toUpperCase();
   if(!key){setAutoStatus('Enter a Jira ticket key first, e.g. PROJ-123.','error');return;}
   if(!creds.jiraSite||!creds.jiraEmail||!creds.jiraToken){setAutoStatus('Jira credentials are missing. Click "Credentials" top-right to set them up.','error');return;}
-  const providerKeyOk=creds.provider==='grok'?creds.grokKey:creds.claudeKey;
+  const providerKeyOk=creds.provider==='grok'?creds.grokKey:(creds.provider==='gemini'?creds.geminiKey:creds.claudeKey);
   if(!providerKeyOk){setAutoStatus('AI provider API key is missing. Click "Credentials" top-right to set it up.','error');return;}
 
   const btn=document.getElementById('fetchAnalyseBtn');
@@ -696,7 +724,7 @@ async function runAutomatic(){
     if(!storyText||storyText.length<10) throw new Error('Ticket returned empty summary/description.');
     document.getElementById('storyInput').value=storyText;
 
-    setAutoStatus('<span class="spinner"></span>Analysing with '+(creds.provider==='grok'?'Grok':'Claude')+'…','info');
+    setAutoStatus('<span class="spinner"></span>Analysing with '+(creds.provider==='grok'?'Grok':creds.provider==='gemini'?'Gemini':'Claude')+'…','info');
     const prompt=buildPrompt(storyText);
     const raw=await callLLM(prompt,creds);
 
